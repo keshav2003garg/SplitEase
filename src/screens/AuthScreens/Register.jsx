@@ -1,0 +1,66 @@
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, TextInput } from 'react-native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Feather from 'react-native-vector-icons/Feather';
+import LinearGradient from 'react-native-linear-gradient';
+import * as Animatable from 'react-native-animatable';
+
+export default function Register({ navigation }) {
+    const [secureTextEntry, setSecureTextEntry] = useState(true)
+    const [textInput, setTextInput] = useState(null)
+
+    const handleSecureTextEntry = () => {
+        secureTextEntry ? setSecureTextEntry(false) : setSecureTextEntry(true);
+    }
+    const emailValidator = (text) => {
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+        return reg.test(text) ? true : false;
+    }
+
+    return (
+        <LinearGradient className="flex-1 bg-[#282d30]" colors={["#000000", "#434343"]}>
+
+            <View className='flex-1 justify-end'><Text className='ml-5 mb-7 text-white text-[30px] font-[Poppins-Bold]'>Register Now!</Text></View>
+
+            <Animatable.View className='flex-[2_2_0%] px-6 py-10 bg-white rounded-[30px]' animation='fadeInUpBig'>
+
+                <View className='mb-6'>
+                    <Text className='text-[#05375a] text-base font-[Poppins-Medium]'>Email</Text>
+                    <View className='flex-row items-center border-b-[1px] border-[#f2f2f2]'>
+                        <FontAwesome name='user-o' color='#05375a' size={20} />
+                        <TextInput className='h-9 p-[10px] flex-1 text-[#05375a]' placeholder="Your Email" autoCapitalize='none' value={textInput} onChangeText={(text) => { setTextInput(text) }} />
+                        {!textInput || textInput == '' || !emailValidator(textInput) ? null : <Animatable.View animation='bounceIn'><Feather name='check-circle' color='#282d30' size={20} /></Animatable.View>}
+                    </View>
+                </View>
+
+                <View className='mb-6'>
+                    <Text className='text-[#05375a] text-base font-[Poppins-Medium]'>Password</Text>
+                    <View className='flex-row items-center border-b-[1px] border-[#f2f2f2]'>
+                        <FontAwesome name='lock' color='#05375a' size={20} />
+                        <TextInput className='h-9 p-[10px] flex-1 text-[#05375a]' placeholder="Your Password" secureTextEntry={secureTextEntry} autoCapitalize='none' />
+                        <TouchableOpacity onPress={handleSecureTextEntry}>{secureTextEntry ? <Feather name='eye' color='#282d30' size={20} /> : <Animatable.View animation='bounceIn'><Feather name='eye-off' color='#282d30' size={20} /></Animatable.View>}</TouchableOpacity>
+                    </View>
+                </View>
+
+                <View className='mb-6'>
+                    <Text className='text-[#05375a] text-base font-[Poppins-Medium]'>Confirm Password</Text>
+                    <View className='flex-row items-center border-b-[1px] border-[#f2f2f2]'>
+                        <FontAwesome name='lock' color='#05375a' size={20} />
+                        <TextInput className='h-9 p-[10px] flex-1 text-[#05375a]' placeholder="Your Password" secureTextEntry={secureTextEntry} autoCapitalize='none' />
+                        <TouchableOpacity onPress={handleSecureTextEntry}>{secureTextEntry ? <Feather name='eye' color='#282d30' size={20} /> : <Animatable.View animation='bounceIn'><Feather name='eye-off' color='#282d30' size={20} /></Animatable.View>}</TouchableOpacity>
+                    </View>
+                </View>
+
+                <TouchableOpacity className='flex-row justify-center'>
+                    <LinearGradient className='my-4 py-2 flex-1 justify-center items-center rounded-xl' colors={['#000000', '#434343']} >
+                        <Text className='text-white font-[Poppins-Bold]'>Sign Up</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => { navigation.navigate('Login') }}><Text className='my-5 text-center text-[#05375a] text-sm font-[Poppins-Medium]'>Already Registered? Login</Text></TouchableOpacity>
+
+            </Animatable.View>
+
+        </LinearGradient>
+    )
+}

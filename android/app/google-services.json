@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "816983578662",
+    "project_id": "splitease-reactnative",
+    "storage_bucket": "splitease-reactnative.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816983578662:android:12526423c4b925707aaee7",
+        "android_client_info": {
+          "package_name": "com.splitease"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "816983578662-18eg5p8a1sf59voerq33c0d2ovt84v8h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.splitease",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "816983578662-2enaqagq6oo51ful143e4r5dd4ritf2r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXhRlj7xqz66f-GMOEstzxLLRy5OkMkvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "816983578662-2enaqagq6oo51ful143e4r5dd4ritf2r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
