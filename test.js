@@ -38,5 +38,3 @@ const demo = async()=>{
       console.log("A new FCM message arrived!");
     });
   });
-
-  // android:roundIcon="@mipmap/ic_launcher_round"

@@ -40,14 +40,17 @@
     "react-native-paper": "^5.7.0",
     "react-native-pie-chart": "^2.1.1",
     "react-native-reanimated": "^3.1.0",
+    "react-native-redash": "^18.1.0",
     "react-native-safe-area-context": "^4.5.1",
     "react-native-screens": "^3.20.0",
     "react-native-shared-element": "^0.8.8",
+    "react-native-touch-id": "^4.4.1",
     "react-native-transparent-status-and-navigation-bar": "^1.0.3",
     "react-native-vector-icons": "^9.2.0",
     "react-navigation-shared-element": "^5.0.0-alpha1",
     "react-redux": "^8.0.5",
-    "redux-persist": "^6.0.0"
+    "redux-persist": "^6.0.0",
+    "rn-local-authentication": "^1.2.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

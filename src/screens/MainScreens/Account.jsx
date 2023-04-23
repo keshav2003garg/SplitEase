@@ -1,22 +1,38 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, Linking } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useRef, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, Linking, BackHandler } from 'react-native'
+import { useDispatch } from 'react-redux';
+import NotificationSetting from 'react-native-open-notification';
 import MI from 'react-native-vector-icons/MaterialIcons';
 import EN from 'react-native-vector-icons/Entypo';
-import NotificationSetting from 'react-native-open-notification';
-import BottomSheet from '@gorhom/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import LocalAuthentication from 'rn-local-authentication';
 
 import { googleLogout } from '../../actions/userActions';
 
-export default function Account() {
+export default function Account({ navigation }) {
 	const dispatch = useDispatch();
+	const [isModalVisible, setModalVisible] = useState(false);
 	const bottomSheetRef = useRef(null);
-	const snapPoints = useMemo(() => ['25%', '50%'], []);
-	const handleSheetChanges = useCallback((index) => {
-		console.log('handleSheetChanges', index);
-	}, []);
+	const snapPoints = ['25%', "90"];
+	const handle = (() => {
+		bottomSheetRef.current.present();
+	});
+	BackHandler.addEventListener('hardwareBackPress', () => {
+		bottomSheetRef.current.close();
+	});
+
+	const handleAuth = () => {
+		LocalAuthentication.authenticateAsync({
+			reason: "Please, authenticate!"
+		}).then(response => {
+			if (response.success) {
+				console.log("Authenticated successfully!");
+			} else {
+				console.log("Something went wrong");
+			}
+		});
+	};
 	return (
-		
 		<View className='flex-1'>
 
 			<View className='mt-14 pb-[12px] border-[#D8D8D8] border-b-[0.55px]'><Text className='text-black text-xl font-[Poppins-Medium] ml-5'>Account</Text></View>
@@ -32,7 +48,7 @@ export default function Account() {
 				<View><MI name='edit' size={27} color={'black'} /></View>
 			</View>
 
-			<TouchableOpacity className='mx-5 mb-5 flex-row items-center'>
+			<TouchableOpacity className='mx-5 mb-5 flex-row items-center' onPress={handle} >
 				<View><EN name='link' size={30} color={'black'} /></View>
 				<Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Join by Link</Text>
 			</TouchableOpacity>
@@ -51,10 +67,10 @@ export default function Account() {
 				<View><MI name='notifications' size={30} color={'black'} /></View>
 				<Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Device and Push notification settings</Text>
 			</TouchableOpacity>
-			<View className='mx-5 mb-5 flex-row items-center'>
+			<TouchableOpacity className='mx-5 mb-5 flex-row items-center' onPress={handleAuth}>
 				<View><MI name='lock' size={30} color={'black'} /></View>
 				<Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Enter Passcode</Text>
-			</View>
+			</TouchableOpacity>
 
 			<Text className='mx-5 mt-4 mb-5 text-black text-sm font-[Poppins-Regular]'>Feedback</Text>
 
@@ -71,6 +87,17 @@ export default function Account() {
 				<View><MI name='logout' size={30} color={'#5A5A5A'} /></View>
 				<Text className='ml-6 text-[#5A5A5A] text-base font-[Poppins-Regular]'>Logout</Text>
 			</TouchableOpacity>
+
+			<BottomSheetModal ref={bottomSheetRef} index={0} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: '#f5f5f5', borderRadius: 40 }} onChange={() => { setModalVisible(true) }} onDismiss={() => { setModalVisible(false) }} >
+				<View className='flex-1'>
+					<View className='flex-row items-center justify-between px-5 py-3 border-b-[0.55px] border-[#D8D8D8]'>
+						<Text className='text-black text-xl font-[Poppins-Medium]'></Text>
+						<TouchableOpacity onPress={() => { bottomSheetRef.current.close(); navigation.navigate("Home") }}>
+							<Text className='text-[#5A5A5A] text-base font-[Poppins-Regular]'>Done</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			</BottomSheetModal>
 
 		</View>
 	)
