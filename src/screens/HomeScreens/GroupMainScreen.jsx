@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, Image, ScrollView } from 'react-native'
 import MI from 'react-native-vector-icons/MaterialIcons';
+import { SharedElement } from 'react-navigation-shared-element';
 
 export default function GroupMainScreen() {
 	return (
@@ -8,7 +9,7 @@ export default function GroupMainScreen() {
 
 			<Image className='flex-1' source={require('../../../assets/img/group-bg.png')} />
 
-			<View className='absolute top-24 left-14 border-white border-[3px] rounded-xl overflow-hidden'><Image className='w-24 h-24' source={require('../../../assets/img/trip.png')} /></View>
+			<View className='absolute top-24 left-14 border-white border-[3px] rounded-xl overflow-hidden'><SharedElement id='img'><Image className='w-24 h-24 rounded-lg' source={require('../../../assets/img/trip.png')} /></SharedElement></View>
 
 			<ScrollView className='flex-[5_5_0%]'>
 				<View className='mt-16 ml-14'>
@@ -29,7 +30,7 @@ export default function GroupMainScreen() {
 						<Text className='text-black text-[13px] font-[Poppins-Medium]'>Payments</Text>
 					</View>
 				</ScrollView>
-				<View className=''>
+				<View>
 					<Text className='text-[15px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>April 2023</Text>
 					<View className='flex-row justify-between items-center bg-slate-50 my-2 mx-3 p-2 rounded-md'>
 						<View className='flex-row items-center'>
@@ -41,10 +42,6 @@ export default function GroupMainScreen() {
 							<View>
 								<Text className='text-base text-black font-[Poppins-Medium]'>Food</Text>
 								<Text className='text-sm text-[#5A5A5A] font-[Poppins-Regular]'>George Paid $68</Text>
-								{/* <View className='flex-row'>
-								<View><Text className='text-[12px] text-[#5A5A5A] font-[Poppins-Regular]'>Akshat</Text></View>
-								<View><Text className='text-[12px] text-[#5A5A5A] font-[Poppins-Regular]'>Your Share: $56</Text></View>
-							</View> */}
 							</View>
 						</View>
 						<View className='items-end'>

@@ -8,11 +8,11 @@ import Login from "../screens/AuthScreens/Login";
 const Stack = createNativeStackNavigator();
 
 export default function Auth() {
-  return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Starter" component={Starter} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Login" component={Login} />
-    </Stack.Navigator>
-  );
+	return (
+		<Stack.Navigator screenOptions={{ headerShown: false }}>
+			<Stack.Screen name="Starter" component={Starter} />
+			<Stack.Screen name="Register" component={Register} />
+			<Stack.Screen name="Login" component={Login} />
+		</Stack.Navigator>
+	);
 }

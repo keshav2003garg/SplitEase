@@ -12,32 +12,32 @@ import { Provider } from 'react-redux';
 import Root from "./src/clusters/root";
 
 const navTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: "white",
-  },
+	...DefaultTheme,
+	colors: {
+		...DefaultTheme.colors,
+		background: "white",
+	},
 };
 
 TransparentStatusAndNavigationBar.init();
 
 const App = () => {
 
-  useEffect(() => {
-    GoogleSignin.configure();
-  })
-  
-  return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <NavigationContainer theme={navTheme}>
-          <BottomSheetModalProvider>
-            <Root />
-          </BottomSheetModalProvider>
-        </NavigationContainer>
-      </PersistGate>
-    </Provider>
-  );
+	useEffect(() => {
+		GoogleSignin.configure();
+	})
+
+	return (
+		<Provider store={store}>
+			<PersistGate loading={null} persistor={persistor}>
+				<NavigationContainer theme={navTheme}>
+					<BottomSheetModalProvider>
+						<Root />
+					</BottomSheetModalProvider>
+				</NavigationContainer>
+			</PersistGate>
+		</Provider>
+	);
 }
 
 export default gestureHandlerRootHOC(App);

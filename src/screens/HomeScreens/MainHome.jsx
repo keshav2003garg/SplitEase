@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, StatusBar, Image, ScrollView, TouchableOpacity, TouchableNativeFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/FontAwesome5';
@@ -10,9 +9,6 @@ import { SharedElement } from 'react-navigation-shared-element';
 
 
 export default function MainHome({ navigation }) {
-	const dispatch = useDispatch();
-	const { user } = useSelector((state) => state.user);
-	const view = useRef(null);
 	return (
 		<View className='flex-1 justify-between'>
 
@@ -20,8 +16,8 @@ export default function MainHome({ navigation }) {
 
 			<View className='flex-row justify-end mt-[50px] pb-[12px] border-[#D8D8D8] border-b-[0.55px]'>
 				<View className='flex flex-row justify-between mr-[12px]'>
-					<View className='mx-[10px] mt-[3px]'><Icon name='search-sharp' color='#5A5A5A' size={24} /></View>
-					<View className='mx-[10px]'><MI onPress={() => { navigation.navigate('CreateGroup') }} name='account-multiple-plus-outline' color='#5A5A5A' size={27} /></View>
+					<Animatable.View animation={'bounceIn'} className='mx-[10px] mt-[3px]'><Icon name='search-sharp' color='#5A5A5A' size={24} /></Animatable.View>
+					<Animatable.View animation={'bounceIn'} className='mx-[10px]'><MI onPress={() => { navigation.navigate('CreateGroup') }} name='account-multiple-plus-outline' color='#5A5A5A' size={27} /></Animatable.View>
 				</View>
 			</View>
 
@@ -37,7 +33,7 @@ export default function MainHome({ navigation }) {
 
 				<View className='flex-row mx-[20px] mt-[17px]'>
 					<TouchableOpacity onPress={() => { navigation.navigate('GroupMainScreen') }}>
-						<SharedElement id={'img'}><Image source={require('../../../assets/img/trip.png')} className='w-[120px] h-[120px] mr-[10px] rounded-[10px]'></Image></SharedElement>
+						<SharedElement id={'img'}><Animatable.Image animation={'zoomIn'} source={require('../../../assets/img/trip.png')} className='w-[120px] h-[120px] mr-[10px] rounded-[10px]'></Animatable.Image></SharedElement>
 					</TouchableOpacity>
 					<View className='mx-[10px] justify-center'>
 						<Text className='text-black text-[16px] font-[Poppins-Medium]'>Mussorie Trip</Text>
@@ -47,13 +43,13 @@ export default function MainHome({ navigation }) {
 					</View>
 				</View>
 
-				<TouchableOpacity className='flex-row mx-[20px] mt-[17px]'>
+				<View className='flex-row mx-[20px] mt-[17px]'>
 					<View><Image source={require('../../../assets/img/personal.jpeg')} className='w-[120px] h-[120px] mr-[10px] rounded-[10px]'></Image></View>
 					<View className='mx-[10px] justify-center'>
 						<Text className='text-black text-[16px] font-[Poppins-Medium]'>Non-group Expenses</Text>
 						<Text className='text-[#03a37e] text-[16px] font-[Poppins-Medium]'>you are owed ₹64</Text>
 					</View>
-				</TouchableOpacity>
+				</View>
 
 				<View className='my-7 flex-row justify-center items-center'>
 					<TouchableNativeFeedback onPress={() => { navigation.navigate('CreateGroup') }} >
@@ -67,10 +63,10 @@ export default function MainHome({ navigation }) {
 			</ScrollView>
 
 			<TouchableOpacity className='absolute bottom-4 right-5' onPress={() => { navigation.navigate('AddExpense') }} >
-				<View className='flex-row items-center rounded-[50px] bg-[#03a37e] p-[10px] px-[15px]'>
+				<Animatable.View animation={'bounceInUp'} className='flex-row items-center rounded-[50px] bg-[#03a37e] p-[10px] px-[15px]'>
 					<View className='m-[5px]'><Feather name='money-bill-wave' color='white' size={20} /></View>
 					<Text className='m-[5px] text-white text-[15px] font-[Poppins-Medium]'>Add Expense</Text>
-				</View>
+				</Animatable.View>
 			</TouchableOpacity>
 
 		</View>

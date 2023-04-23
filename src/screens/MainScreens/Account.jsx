@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Linking, BackHandler } from 'react-native'
 import { useDispatch } from 'react-redux';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import NotificationSetting from 'react-native-open-notification';
+import LocalAuthentication from 'rn-local-authentication';
 import MI from 'react-native-vector-icons/MaterialIcons';
 import EN from 'react-native-vector-icons/Entypo';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import LocalAuthentication from 'rn-local-authentication';
 
 import { googleLogout } from '../../actions/userActions';
 
@@ -18,7 +18,7 @@ export default function Account({ navigation }) {
 		bottomSheetRef.current.present();
 	});
 	BackHandler.addEventListener('hardwareBackPress', () => {
-		bottomSheetRef.current.close();
+		if (isModalVisible) bottomSheetRef.current.close();
 	});
 
 	const handleAuth = () => {
@@ -52,17 +52,17 @@ export default function Account({ navigation }) {
 				<View><EN name='link' size={30} color={'black'} /></View>
 				<Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Join by Link</Text>
 			</TouchableOpacity>
-			<View className='mx-5 mb-5 flex-row items-center'>
+			<TouchableOpacity className='mx-5 mb-5 flex-row items-center'>
 				<View><MI name='payments' size={30} color={'black'} /></View>
 				<Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Your Payment Details</Text>
-			</View>
+			</TouchableOpacity>
 
 			<Text className='mx-5 mt-4 mb-5 text-black text-sm font-[Poppins-Regular]'>Preferences</Text>
 
-			<View className='mx-5 mb-5 flex-row items-center'>
+			<TouchableOpacity className='mx-5 mb-5 flex-row items-center'>
 				<View><MI name='email' size={30} color={'black'} /></View>
 				<Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Email Settings</Text>
-			</View>
+			</TouchableOpacity>
 			<TouchableOpacity className='mx-5 mb-5 flex-row items-center' onPress={() => { NotificationSetting.open() }}>
 				<View><MI name='notifications' size={30} color={'black'} /></View>
 				<Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Device and Push notification settings</Text>

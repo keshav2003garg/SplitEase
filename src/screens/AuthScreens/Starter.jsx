@@ -1,6 +1,6 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { View, Text, TouchableOpacity, Image } from "react-native";
+import { useDispatch } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
 import MI from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
@@ -18,7 +18,8 @@ export default function Starter({ navigation }) {
 			</View>
 
 			<Animatable.View animation="fadeInUpBig" className="flex-1 bg-white rounded-[25px]">
-				<TouchableOpacity onPress={()=>{dispatch(googleRegister())}}>
+				
+				<TouchableOpacity onPress={() => { dispatch(googleRegister()) }}>
 					<Animatable.View animation="bounceIn" delay={500} className="mx-[25px] mt-[20px] mb-[15px] p-[10px] bg-[#282d30] rounded-[50px] flex-row justify-center items-center">
 						<Animatable.Image className="w-[30px] h-[30px] mx-[10px]" source={require("../../../assets/icons/google.png")}></Animatable.Image>
 						<Animatable.Text className="text-white text-[15px] font-[Poppins-Medium]"> Continue With Google</Animatable.Text>
