@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
+import React, {useEffect} from "react";
 import { View, Text, StatusBar, Image, ScrollView, TouchableOpacity, TouchableNativeFeedback } from 'react-native';
+import { useDispatch } from "react-redux";
 import Icon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/FontAwesome5';
 import MI from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,8 +8,14 @@ import MAI from 'react-native-vector-icons/MaterialIcons';
 import * as Animatable from "react-native-animatable";
 import { SharedElement } from 'react-navigation-shared-element';
 
+import { bottomTabVisible } from "../../actions/userActions";
+
 
 export default function MainHome({ navigation }) {
+	const dispatch = useDispatch();
+	useEffect(() => {
+		dispatch(bottomTabVisible())
+	}, []);
 	return (
 		<View className='flex-1 justify-between'>
 
@@ -52,7 +59,7 @@ export default function MainHome({ navigation }) {
 				</View>
 
 				<View className='my-7 flex-row justify-center items-center'>
-					<TouchableNativeFeedback onPress={() => { navigation.navigate('CreateGroup') }} >
+					<TouchableNativeFeedback onPress={() => { navigation.navigate('CreateGroup') }} background={TouchableNativeFeedback.Ripple('#DAFBF3', false)}>
 						<View className='p-1 flex-row items-center rounded-lg border-[#03a37e] border-[2px]'>
 							<View className='m-[5px]'><MAI name='group-add' color='#03a37e' size={25} /></View>
 							<Text className='m-[5px] text-[#03a37e] text-[15px] font-[Poppins-Medium]'>Start a new group</Text>
@@ -62,12 +69,14 @@ export default function MainHome({ navigation }) {
 
 			</ScrollView>
 
-			<TouchableOpacity className='absolute bottom-4 right-5' onPress={() => { navigation.navigate('AddExpense') }} >
-				<Animatable.View animation={'bounceInUp'} className='flex-row items-center rounded-[50px] bg-[#03a37e] p-[10px] px-[15px]'>
-					<View className='m-[5px]'><Feather name='money-bill-wave' color='white' size={20} /></View>
-					<Text className='m-[5px] text-white text-[15px] font-[Poppins-Medium]'>Add Expense</Text>
-				</Animatable.View>
-			</TouchableOpacity>
+			<View className='absolute bottom-4 right-5' onPress={() => { navigation.navigate('AddExpense') }} >
+				<TouchableNativeFeedback onPress={() => { navigation.navigate('AddExpense') }}>
+					<Animatable.View animation={'bounceInUp'} className='flex-row items-center rounded-[50px] bg-[#03a37e] p-[10px] px-[15px]'>
+						<View className='m-[5px]'><Feather name='money-bill-wave' color='white' size={20} /></View>
+						<Text className='m-[5px] text-white text-[15px] font-[Poppins-Medium]'>Add Expense</Text>
+					</Animatable.View>
+				</TouchableNativeFeedback>
+			</View>
 
 		</View>
 	)

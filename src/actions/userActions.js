@@ -3,6 +3,7 @@ import {
     GOOGLE_LOGOUT__REQUEST, GOOGLE_LOGOUT__SUCCESS, GOOGLE_LOGOUT__FAIL,
 
     CLEAR__MESSAGES, CLEAR__ERRORS,
+    BOTTOM_TAB__VISIBLE, BOTTOM_TAB__HIDDEN
 } from '../constants/userConstants';
 
 import auth from '@react-native-firebase/auth';
@@ -98,5 +99,21 @@ const clearMessages = () => {
     )
 }
 
+const bottomTabVisible = () => {
+    return (
+        async (dispatch) => {
+            dispatch({ type: BOTTOM_TAB__VISIBLE });
+        }
+    )
+}
 
-export { googleRegister, googleLogout, clearErrors, clearMessages };
+const bottomTabHidden = () => {
+    return (
+        async (dispatch) => {
+            dispatch({ type: BOTTOM_TAB__HIDDEN });
+        }
+    )
+}
+
+
+export { googleRegister, googleLogout, clearErrors, clearMessages, bottomTabVisible, bottomTabHidden };

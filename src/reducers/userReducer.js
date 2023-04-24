@@ -3,11 +3,12 @@ import {
     GOOGLE_LOGOUT__REQUEST, GOOGLE_LOGOUT__SUCCESS, GOOGLE_LOGOUT__FAIL,
 
     CLEAR__ERRORS, CLEAR__MESSAGES,
+    BOTTOM_TAB__VISIBLE, BOTTOM_TAB__HIDDEN
 } from '../constants/userConstants';
 
 
 
-const initialState = { isAuthenticated: false };
+const initialState = { isAuthenticated: false, tabVisible: true };
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case GOOGLE_REGISTER__REQUEST:
@@ -55,6 +56,18 @@ const userReducer = (state = initialState, action) => {
                 ...state,
                 error: undefined
             }
+
+        case BOTTOM_TAB__VISIBLE:
+            return {
+                ...state,
+                tabVisible: true
+            }
+        case BOTTOM_TAB__HIDDEN:
+            return {
+                ...state,
+                tabVisible: false
+            }
+            
 
         default:
             return state

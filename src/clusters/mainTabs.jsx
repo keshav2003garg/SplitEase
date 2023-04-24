@@ -1,10 +1,13 @@
 import React, { useEffect, useRef } from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { View, TouchableNativeFeedback } from "react-native";
+import { trigger } from "react-native-haptic-feedback";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Feather from 'react-native-vector-icons/Feather';
 import MI from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Animatable from "react-native-animatable";
 
+import { bottomTabVisible } from "../actions/userActions";
 
 import Home from "../screens/MainScreens/Home";
 import Charts from "../screens/MainScreens/Charts";
@@ -26,19 +29,26 @@ const TabButton = (props) => {
 	const viewRef = useRef(null);
 
 	useEffect(() => {
-		if (focused) viewRef.current.bounceIn(800);
+		if (focused) { viewRef.current.bounceIn(800); trigger("rigid"); }
 	}, [focused])
 
 	return (
-		<TouchableOpacity className='flex-1 flex-row justify-center items-center' onPress={onPress}>
-			<Animatable.View ref={viewRef}><item.Icon name={props.item.icon} color={focused ? '#03a37e' : "#5A5A5A"} size={30} /></Animatable.View>
-		</TouchableOpacity>
+		<TouchableNativeFeedback onPress={onPress} background={TouchableNativeFeedback.Ripple('#D0D0D0', true)}>
+			<View className='flex-1 flex-row justify-center items-center'>
+				<Animatable.View ref={viewRef}><item.Icon name={props.item.icon} color={focused ? '#03a37e' : "#5A5A5A"} size={30} /></Animatable.View>
+			</View>
+		</TouchableNativeFeedback>
 	)
 }
 
 export default function Main() {
+	const { tabVisible } = useSelector((state) => state.user);
+	const dispatch = useDispatch();
+	React.useEffect(() => {
+		dispatch(bottomTabVisible())
+	}, []);
 	return (
-		<Tab.Navigator screenOptions={{ headerShown: false, tabBarShowLabel: false }}>
+		<Tab.Navigator screenOptions={{ headerShown: false, tabBarShowLabel: false, tabBarStyle: { display: `${tabVisible ? 'flex' : 'none'}` } }}>
 			{TabArr.map((item, index) => {
 				return (
 					<Tab.Screen key={index} name={item.name} component={item.component} options={{ tabBarButton: (props) => <TabButton {...props} item={item} /> }} />
