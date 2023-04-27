@@ -2,13 +2,14 @@ import {
     GOOGLE_REGISTER__REQUEST, GOOGLE_REGISTER__SUCCESS, GOOGLE_REGISTER__FAIL,
     GOOGLE_LOGOUT__REQUEST, GOOGLE_LOGOUT__SUCCESS, GOOGLE_LOGOUT__FAIL,
 
+    BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__ERRORS, CLEAR__MESSAGES,
     BOTTOM_TAB__VISIBLE, BOTTOM_TAB__HIDDEN
 } from '../constants/userConstants';
 
 
 
-const initialState = { isAuthenticated: false, tabVisible: true };
+const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false };
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case GOOGLE_REGISTER__REQUEST:
@@ -17,7 +18,7 @@ const userReducer = (state = initialState, action) => {
                 ...state,
                 loading: true,
             }
-        
+
 
         case GOOGLE_REGISTER__SUCCESS:
             return {
@@ -45,7 +46,7 @@ const userReducer = (state = initialState, action) => {
                 error: action.payload
             }
 
-        
+
         case CLEAR__MESSAGES:
             return {
                 ...state,
@@ -67,7 +68,18 @@ const userReducer = (state = initialState, action) => {
                 ...state,
                 tabVisible: false
             }
-            
+
+        case BIOMETRIC_NEEDED:
+            return {
+                ...state,
+                isFingerPrintNeeded: true
+            }
+        case BIOMETRIC_NOT_NEEDED:
+            return {
+                ...state,
+                isFingerPrintNeeded: false
+            }
+
 
         default:
             return state

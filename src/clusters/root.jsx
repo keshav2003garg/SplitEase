@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import AwesomeAlert from 'react-native-awesome-alerts';
 import { useRefBottomAlert, BottomAlert, showBottomAlert } from 'react-native-modal-bottom-alert';
 import messaging from '@react-native-firebase/messaging';
+import LocalAuthentication from 'rn-local-authentication';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 import { clearMessages, clearErrors } from "../actions/userActions";
 
@@ -14,8 +15,22 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 
 export default function Root() {
+	const [access, setAccess] = useState(false);
 	const dispatch = useDispatch();
-	const { isAuthenticated, loading, message, error } = useSelector((state) => state.user);
+	const { isFingerPrintNeeded, isAuthenticated, loading, message, error } = useSelector((state) => state.user);
+	
+	const authenticateBioMetric = async () => {
+		const response = await LocalAuthentication.authenticateAsync({
+			title: "Unlock SplitEase",
+			reason: "Confirm your FingerPrint or PIN to continue",
+			fallbackEnabled: true,
+			fallbackToPinCodeAction: true,
+		});
+		if (response.success) setAccess(true);
+		else {
+			console.log("Something went wrong", response);
+		}
+	}
 	useEffect(() => {
 		if (message) {
 			showBottomAlert('success', message,)
@@ -26,11 +41,22 @@ export default function Root() {
 			dispatch(clearErrors());
 		}
 	});
-	return (
-		<>
-			{isAuthenticated ? <Main /> : <Auth />}
-			{loading ? <AwesomeAlert show={true} showProgress={true} title='Loading' progressColor='#434343' useNativeDriver={true} closeOnTouchOutside={false} closeOnHardwareBackPress={false} /> : null}
-			<BottomAlert ref={(ref) => useRefBottomAlert(ref)} />
-		</>
-	)
+	
+	if (isFingerPrintNeeded) {
+		authenticateBioMetric();
+		return access ?
+			(<>
+				{isAuthenticated ? <Main /> : <Auth />}
+				{loading ? <AwesomeAlert show={true} showProgress={true} title='Loading' progressColor='#434343' useNativeDriver={true} closeOnTouchOutside={false} closeOnHardwareBackPress={false} /> : null}
+				<BottomAlert ref={(ref) => useRefBottomAlert(ref)} />
+			</>) : null;
+	} else {
+		return (
+			<>
+				{isAuthenticated ? <Main /> : <Auth />}
+				{loading ? <AwesomeAlert show={true} showProgress={true} title='Loading' progressColor='#434343' useNativeDriver={true} closeOnTouchOutside={false} closeOnHardwareBackPress={false} /> : null}
+				<BottomAlert ref={(ref) => useRefBottomAlert(ref)} />
+			</>
+		)
+	}
 }

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import * as TransparentStatusAndNavigationBar from "react-native-transparent-status-and-navigation-bar";
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
+import Toast from 'react-native-toast-message';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -10,6 +11,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 
 import Root from "./src/clusters/root";
+import Alert from "./src/components/Alert";
 
 const navTheme = {
 	...DefaultTheme,
@@ -33,6 +35,7 @@ const App = () => {
 				<NavigationContainer theme={navTheme}>
 					<BottomSheetModalProvider>
 						<Root />
+						<Toast config={{ tomatoToast: ({ text1, props }) => (<Alert message={text1} options={props} />) }} />
 					</BottomSheetModalProvider>
 				</NavigationContainer>
 			</PersistGate>

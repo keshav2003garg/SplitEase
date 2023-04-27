@@ -2,6 +2,7 @@ import {
     GOOGLE_REGISTER__REQUEST, GOOGLE_REGISTER__SUCCESS, GOOGLE_REGISTER__FAIL,
     GOOGLE_LOGOUT__REQUEST, GOOGLE_LOGOUT__SUCCESS, GOOGLE_LOGOUT__FAIL,
 
+    BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__MESSAGES, CLEAR__ERRORS,
     BOTTOM_TAB__VISIBLE, BOTTOM_TAB__HIDDEN
 } from '../constants/userConstants';
@@ -115,5 +116,22 @@ const bottomTabHidden = () => {
     )
 }
 
+const enableBiometric = () => {
+    return (
+        async (dispatch) => {
+            dispatch({ type: BIOMETRIC_NEEDED });
+        }
+    )
+}
 
-export { googleRegister, googleLogout, clearErrors, clearMessages, bottomTabVisible, bottomTabHidden };
+const disableBiometric = () => {
+    return (
+        async (dispatch) => {
+            dispatch({ type: BIOMETRIC_NOT_NEEDED });
+        }
+    )
+}
+
+
+
+export { googleRegister, googleLogout, clearErrors, clearMessages, bottomTabVisible, bottomTabHidden, enableBiometric, disableBiometric };
