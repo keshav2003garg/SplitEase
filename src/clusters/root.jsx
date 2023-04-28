@@ -55,7 +55,7 @@ export default function Root() {
 			<>
 				{isAuthenticated ? <Main /> : <Auth />}
 				{loading ? <AwesomeAlert show={true} showProgress={true} title='Loading' progressColor='#434343' useNativeDriver={true} closeOnTouchOutside={false} closeOnHardwareBackPress={false} /> : null}
-				<BottomAlert ref={(ref) => useRefBottomAlert(ref)} />
+				<BottomAlert ref={(ref) => useRefBottomAlert(ref)} statusBarTranslucent loopAnimation />
 			</>
 		)
 	}

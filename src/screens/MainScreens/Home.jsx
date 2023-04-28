@@ -20,7 +20,7 @@ export default function Home() {
 		<Stack.Navigator screenOptions={{ headerShown: false }}>
 			<Stack.Screen name="MainHome" component={MainHome} />
 			<Stack.Screen name="CreateGroup" component={CreateGroup} options={options} />
-			<Stack.Screen name="GroupMainScreen" component={GroupMainScreen} options={options} sharedElements={() => { return ['img'] }} />
+			<Stack.Screen name="GroupMainScreen" component={GroupMainScreen} options={options} />
 			<Stack.Screen name="AddExpense" component={AddExpense} options={options} />
 		</Stack.Navigator>
 	);

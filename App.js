@@ -35,7 +35,7 @@ const App = () => {
 				<NavigationContainer theme={navTheme}>
 					<BottomSheetModalProvider>
 						<Root />
-						<Toast config={{ tomatoToast: ({ text1, props }) => (<Alert message={text1} options={props} />) }} />
+						<Toast config={{ custom: ({ text1, props }) => (<Alert message={text1} options={props} />) }} />
 					</BottomSheetModalProvider>
 				</NavigationContainer>
 			</PersistGate>

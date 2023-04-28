@@ -1,21 +1,23 @@
-import React, {useEffect} from "react";
-import { View, Text, StatusBar, Image, ScrollView, TouchableOpacity, TouchableNativeFeedback } from 'react-native';
-import { useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { View, Text, StatusBar, Image, ScrollView, TouchableNativeFeedback } from 'react-native';
+import { useDispatch, useSelector } from "react-redux";
 import Icon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/FontAwesome5';
 import MI from 'react-native-vector-icons/MaterialCommunityIcons';
 import MAI from 'react-native-vector-icons/MaterialIcons';
 import * as Animatable from "react-native-animatable";
-import { SharedElement } from 'react-navigation-shared-element';
 
-import { bottomTabVisible } from "../../actions/userActions";
+import GroupList from "../../components/GroupList";
+
+import { fetchGroups } from "../../actions/userActions";
 
 
 export default function MainHome({ navigation }) {
 	const dispatch = useDispatch();
+	const { groups, user } = useSelector(state => state.user);
 	useEffect(() => {
-		dispatch(bottomTabVisible())
-	}, []);
+		dispatch(fetchGroups(user.userID));
+	}, [groups]);
 	return (
 		<View className='flex-1 justify-between'>
 
@@ -38,20 +40,14 @@ export default function MainHome({ navigation }) {
 					<Icon name='md-options-sharp' color='#5A5A5A' size={32} />
 				</View>
 
-				<View className='flex-row mx-[20px] mt-[17px]'>
-					<TouchableOpacity onPress={() => { navigation.navigate('GroupMainScreen') }}>
-						<SharedElement id={'img'}><Animatable.Image animation={'zoomIn'} source={require('../../../assets/img/trip.png')} className='w-[120px] h-[120px] mr-[10px] rounded-[10px]'></Animatable.Image></SharedElement>
-					</TouchableOpacity>
-					<View className='mx-[10px] justify-center'>
-						<Text className='text-black text-[16px] font-[Poppins-Medium]'>Mussorie Trip</Text>
-						<Text className='text-[#03a37e] text-[16px] font-[Poppins-Medium]'>you are owed ₹64</Text>
-						<Text className='text-[#5A5A5A] text-[13px] font-[Poppins-Medium]'>Kishan owes you <Text className='text-[#03a37e]'>₹33</Text></Text>
-						<Text className='text-[#5A5A5A] text-[13px] font-[Poppins-Medium]'>Akshat owes you <Text className='text-[#03a37e]'>₹31</Text></Text>
-					</View>
-				</View>
+				{groups && groups.map((data) => {
+					return (
+						<GroupList key={data.groupID} data={data} />
+					)
+				})}
 
 				<View className='flex-row mx-[20px] mt-[17px]'>
-					<View><Image source={require('../../../assets/img/personal.jpeg')} className='w-[120px] h-[120px] mr-[10px] rounded-[10px]'></Image></View>
+					<View><Image source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/splitease-reactnative.appspot.com/o/images%2Fpersonal%2Fpersonal.jpeg?alt=media&token=2d3f531e-2c90-42a6-9d66-6246b0dca90f' }} className='w-[120px] h-[120px] mr-[10px] rounded-[10px]'></Image></View>
 					<View className='mx-[10px] justify-center'>
 						<Text className='text-black text-[16px] font-[Poppins-Medium]'>Non-group Expenses</Text>
 						<Text className='text-[#03a37e] text-[16px] font-[Poppins-Medium]'>you are owed ₹64</Text>

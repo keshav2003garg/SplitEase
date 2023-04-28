@@ -1,19 +1,23 @@
 import React from 'react'
-import { View, Text, Image, ScrollView } from 'react-native'
+import { View, Text, Image, ScrollView, TouchableNativeFeedback } from 'react-native'
 import MI from 'react-native-vector-icons/MaterialIcons';
 import { SharedElement } from 'react-navigation-shared-element';
 
-export default function GroupMainScreen() {
+const GroupMainScreen = ({ route, navigation }) => {
+	const { data } = route.params;
 	return (
 		<View className='flex-1'>
 
 			<Image className='flex-1' source={require('../../../assets/img/group-bg.png')} />
 
-			<View className='absolute top-24 left-14 border-white border-[3px] rounded-xl overflow-hidden'><SharedElement id='img'><Image className='w-24 h-24 rounded-lg' source={require('../../../assets/img/trip.png')} /></SharedElement></View>
+			<TouchableNativeFeedback onPress={() => { navigation.goBack() }}><View className='absolute top-12 left-3'><MI name='arrow-back' color={'white'} size={25} /></View></TouchableNativeFeedback>
+			<View className='absolute top-12 right-3'><MI name='settings' color={'white'} size={25} /></View>
+
+			<View className='absolute top-24 left-14 border-white border-[3px] rounded-xl overflow-hidden'><SharedElement id={`data.${data.groupImage}.image`}><Image className='w-24 h-24 rounded-lg' source={{ uri: data.groupImage }} /></SharedElement></View>
 
 			<ScrollView className='flex-[5_5_0%]'>
 				<View className='mt-16 ml-14'>
-					<Text className='text-black text-[20px] font-[Poppins-Medium]'>Mussorie Trip</Text>
+					<Text className='text-black text-[20px] font-[Poppins-Medium]'>{data.groupName}</Text>
 					<Text className='text-black text-sm font-[Poppins-Medium]'>Akshat owes you ₹775</Text>
 				</View>
 				<ScrollView className='mx-6 my-6' horizontal >
@@ -55,3 +59,12 @@ export default function GroupMainScreen() {
 		</View>
 	)
 }
+
+GroupMainScreen.sharedElements = (route) => {
+	const { data } = route.params;
+	return [{
+		id: `data.${data.groupImage}.image`
+	}];
+};
+
+export default GroupMainScreen;
