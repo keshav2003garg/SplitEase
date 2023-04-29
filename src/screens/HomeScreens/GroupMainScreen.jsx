@@ -1,60 +1,86 @@
-import React from 'react'
-import { View, Text, Image, ScrollView, TouchableNativeFeedback } from 'react-native'
+import React, { useRef, useState, useMemo } from 'react';
+import { View, Text, Image, TouchableNativeFeedback, BackHandler } from 'react-native';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { trigger } from "react-native-haptic-feedback";
 import MI from 'react-native-vector-icons/MaterialIcons';
 import { SharedElement } from 'react-navigation-shared-element';
 
+import GroupSettings from '../../components/BottomSheetModals/GroupSettings';
+import Expenses from '../../components/GroupScreenTabs/Expenses';
+import Balances from '../../components/GroupScreenTabs/Balances';
+import Total from '../../components/GroupScreenTabs/Total';
+import Payments from '../../components/GroupScreenTabs/Payments';
+
 const GroupMainScreen = ({ route, navigation }) => {
 	const { data } = route.params;
+	const [tab, setTab] = useState({ expenses: true, balances: false, total: false, payments: false });
+	const [isModalVisible, setModalVisible] = useState(false);
+	const bottomSheetModalRef = useRef(null);
+	const snapPoints = useMemo(() => ["64%", "90"], []);
+	const handleSheet = () => {
+		setModalVisible(true);
+		bottomSheetModalRef.current?.present();
+		trigger("impactLight", { mode: "medium" });
+	}
+	BackHandler.addEventListener('hardwareBackPress', () => {
+		if (isModalVisible) {
+			bottomSheetModalRef.current?.close();
+			setModalVisible(false);
+			return true;
+		}
+		return false;
+	});
+
 	return (
-		<View className='flex-1'>
+		<View pointerEvents={isModalVisible ? "none" : "auto"} className={`flex-1 ${isModalVisible ? 'bg-[#BEBEBE]' : 'bg-[#FFFFFf]'}`}>
 
 			<Image className='flex-1' source={require('../../../assets/img/group-bg.png')} />
 
 			<TouchableNativeFeedback onPress={() => { navigation.goBack() }}><View className='absolute top-12 left-3'><MI name='arrow-back' color={'white'} size={25} /></View></TouchableNativeFeedback>
-			<View className='absolute top-12 right-3'><MI name='settings' color={'white'} size={25} /></View>
+			<TouchableNativeFeedback onPress={handleSheet} ><View className='absolute top-12 right-3'><MI name='settings' color={'white'} size={25} /></View></TouchableNativeFeedback>
 
 			<View className='absolute top-24 left-14 border-white border-[3px] rounded-xl overflow-hidden'><SharedElement id={`data.${data.groupImage}.image`}><Image className='w-24 h-24 rounded-lg' source={{ uri: data.groupImage }} /></SharedElement></View>
 
-			<ScrollView className='flex-[5_5_0%]'>
+			<View className='flex-[5_5_0%]'>
+
 				<View className='mt-16 ml-14'>
 					<Text className='text-black text-[20px] font-[Poppins-Medium]'>{data.groupName}</Text>
 					<Text className='text-black text-sm font-[Poppins-Medium]'>Akshat owes you ₹775</Text>
 				</View>
-				<ScrollView className='mx-6 my-6' horizontal >
-					<View className='flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-xl bg-[#5d5d5d]'>
-						<Text className='text-black text-[13px] font-[Poppins-Medium]'>Expenses</Text>
-					</View>
-					<View className='flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-xl'>
-						<Text className='text-black text-[13px] font-[Poppins-Medium]'>Balances</Text>
-					</View>
-					<View className='flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-xl'>
-						<Text className='text-black text-[13px] font-[Poppins-Medium]'>Total</Text>
-					</View>
-					<View className='flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-xl'>
-						<Text className='text-black text-[13px] font-[Poppins-Medium]'>Payments</Text>
-					</View>
-				</ScrollView>
-				<View>
-					<Text className='text-[15px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>April 2023</Text>
-					<View className='flex-row justify-between items-center bg-slate-50 my-2 mx-3 p-2 rounded-md'>
-						<View className='flex-row items-center'>
-							<View className='items-center justify-center'>
-								<Text className='text-[10px] text-[#5A5A5A] font-[Poppins-Regular]'>Apr</Text>
-								<Text className='text-[18px] text-[#5A5A5A] font-[Poppins-Medium] leading-5'>20</Text>
-							</View>
-							<View className='mx-3 p-2 bg-slate-300 rounded-lg'><MI name='music-note' size={30} color={'black'} /></View>
-							<View>
-								<Text className='text-base text-black font-[Poppins-Medium]'>Food</Text>
-								<Text className='text-sm text-[#5A5A5A] font-[Poppins-Regular]'>George Paid $68</Text>
-							</View>
+
+				<View className='mx-6 my-6 flex-row' >
+					<TouchableNativeFeedback onPress={() => { setTab({ expenses: true, balances: false, total: false, payments: false }) }}>
+						<View className={`mx-2 p-2 border-[#AAAAAA] border-[0.6px] rounded-md border-b-4 border-b-[#AAAAAA] ${tab.expenses ? 'bg-[#808080]' : ''}`}>
+							<Text className='text-black text-[13px] font-[Poppins-Medium]'>Expenses</Text>
 						</View>
-						<View className='items-end'>
-							<Text className='text-[13px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>you borrowed</Text>
-							<Text className='text-[17px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>$25.365</Text>
+					</TouchableNativeFeedback>
+					<TouchableNativeFeedback onPress={() => { setTab({ expenses: false, balances: true, total: false, payments: false }) }}>
+						<View className={`mx-2 p-2 border-[#AAAAAA] border-[0.6px] rounded-md border-b-4 border-b-[#AAAAAA] ${tab.balances ? 'bg-[#808080]' : ''}`}>
+							<Text className='text-black text-[13px] font-[Poppins-Medium]'>Balances</Text>
 						</View>
-					</View>
+					</TouchableNativeFeedback>
+					<TouchableNativeFeedback onPress={() => { setTab({ expenses: false, balances: false, total: true, payments: false }) }}>
+						<View className={`mx-2 p-2 border-[#AAAAAA] border-[0.6px] rounded-md border-b-4 border-b-[#AAAAAA] ${tab.total ? 'bg-[#808080]' : ''}`}>
+							<Text className='text-black text-[13px] font-[Poppins-Medium]'>Total</Text>
+						</View>
+					</TouchableNativeFeedback>
+					<TouchableNativeFeedback onPress={() => { setTab({ expenses: false, balances: false, total: false, payments: true }) }}>
+						<View className={`mx-2 p-2 border-[#AAAAAA] border-[0.6px] rounded-md border-b-4 border-b-[#AAAAAA] ${tab.payments ? 'bg-[#808080]' : ''}`}>
+							<Text className='text-black text-[13px] font-[Poppins-Medium]'>Payments</Text>
+						</View>
+					</TouchableNativeFeedback>
 				</View>
-			</ScrollView>
+
+				{tab.expenses && <Expenses />}
+				{tab.balances && <Balances />}
+				{tab.total && <Total />}
+				{tab.payments && <Payments />}
+
+				<BottomSheetModal name='settings' ref={bottomSheetModalRef} index={0} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: '#fff', borderRadius: 40, }} onChange={() => { setModalVisible(true) }} onDismiss={() => { setModalVisible(false) }} >
+					<GroupSettings />
+				</BottomSheetModal>
+
+			</View>
 
 		</View>
 	)

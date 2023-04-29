@@ -15,10 +15,10 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 
 export default function Root() {
-	const [access, setAccess] = useState(false);
+	const [access, setAccess] = useState({ isAccessed: false, error: null });
 	const dispatch = useDispatch();
 	const { isFingerPrintNeeded, isAuthenticated, loading, message, error } = useSelector((state) => state.user);
-	
+
 	const authenticateBioMetric = async () => {
 		const response = await LocalAuthentication.authenticateAsync({
 			title: "Unlock SplitEase",
@@ -26,9 +26,9 @@ export default function Root() {
 			fallbackEnabled: true,
 			fallbackToPinCodeAction: true,
 		});
-		if (response.success) setAccess(true);
+		if (response.success) setAccess({ isAccessed: true, error: null });
 		else {
-			console.log("Something went wrong", response);
+			setAccess({ isAccessed: false, error: response.error });
 		}
 	}
 	useEffect(() => {
@@ -41,10 +41,10 @@ export default function Root() {
 			dispatch(clearErrors());
 		}
 	});
-	
+
 	if (isFingerPrintNeeded) {
-		authenticateBioMetric();
-		return access ?
+		if (!access.isAccessed) authenticateBioMetric();
+		return access.isAccessed ?
 			(<>
 				{isAuthenticated ? <Main /> : <Auth />}
 				{loading ? <AwesomeAlert show={true} showProgress={true} title='Loading' progressColor='#434343' useNativeDriver={true} closeOnTouchOutside={false} closeOnHardwareBackPress={false} /> : null}

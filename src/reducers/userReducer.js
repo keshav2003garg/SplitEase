@@ -18,11 +18,15 @@ const userReducer = (state = initialState, action) => {
         case GOOGLE_REGISTER__REQUEST:
         case GOOGLE_LOGOUT__REQUEST:
         case CREATE_GROUP__REQUEST:
-        case FETCH_GROUPS__REQUEST:
         case JOIN_GROUP__REQUEST:
             return {
                 ...state,
                 loading: true,
+            }
+        case FETCH_GROUPS__REQUEST:
+            return {
+                ...state,
+                loading: false,
             }
 
 

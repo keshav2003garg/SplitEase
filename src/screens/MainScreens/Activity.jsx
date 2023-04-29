@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList } from 'react-native';
 
-import ActivityBar from '../../components/ActivityBar';
+import ActivityList from '../../components/ActivityList';
 
 export default function Activity() {
 
@@ -29,7 +29,7 @@ export default function Activity() {
 
 			<View className='mt-14 pb-[12px] border-[#D8D8D8] border-b-[0.55px]'><Text className='text-black text-xl font-[Poppins-Medium] ml-5'>Activity</Text></View>
 
-			<FlatList data={data} renderItem={({ item }) => <ActivityBar data={item} />} keyExtractor={(item, index) => index.toString()} />
+			<FlatList data={data} renderItem={({ item }) => <ActivityList data={item} />} keyExtractor={(item, index) => index.toString()} />
 
 		</View>
 	)

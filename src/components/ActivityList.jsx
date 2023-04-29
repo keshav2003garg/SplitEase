@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Image } from 'react-native'
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-export default function ActivityBar() {
+export default function ActivityList() {
     const translateX = useSharedValue(0);
     const panGesture = useAnimatedGestureHandler({
         onActive: (e) => {
@@ -21,7 +21,7 @@ export default function ActivityBar() {
 
     return (
         <PanGestureHandler onGestureEvent={panGesture} >
-            <Animated.View style={animatedStyle} className='flex-row justify-between items-center bg-slate-50 my-2 mx-3 p-2 rounded-md'>
+            <Animated.View style={animatedStyle} className='flex-row justify-between items-center bg-[#F9F9F9] my-2 mx-3 p-2 rounded-md'>
                 <View className='flex-row items-center'>
                     <View className='items-center justify-center'>
                         <Text className='text-[10px] text-[#5A5A5A] font-[Poppins-Regular]'>Apr</Text>

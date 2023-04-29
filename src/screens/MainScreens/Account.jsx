@@ -15,16 +15,17 @@ export default function Account({ navigation }) {
 	const snapPoints = useMemo(() => ['26%', "77%", "90"], []);
 	const handleSheet = ((name) => {
 		setModalVisible({ visible: true, components: { ...isModalVisible.components, [name]: true } });
-		bottomSheetRef.current[name].present();
+		bottomSheetRef.current[name]?.present();
 		trigger("impactMedium");
 	});
 	BackHandler.addEventListener('hardwareBackPress', () => {
 		if (isModalVisible.components.profile) bottomSheetRef.current['profile'].forceClose();
 		if (isModalVisible.components.join) bottomSheetRef.current['join'].forceClose();
 		if (isModalVisible.components.payment) bottomSheetRef.current['payment'].forceClose();
+		if (isModalVisible.components.emailSetting) bottomSheetRef.current['emailSetting'].forceClose();
 	});
 	return (
-		<View pointerEvents={isModalVisible.visible ? "none" : "auto"} className={`flex-1 pointer-events-none ${isModalVisible.visible ? 'bg-[#BEBEBE]' : 'bg-[#FFFFFf]'}`}>
+		<View pointerEvents={isModalVisible.visible ? "none" : "auto"} className={`flex-1 ${isModalVisible.visible ? 'bg-[#BEBEBE]' : 'bg-[#FFFFFf]'}`}>
 
 			<View className='mt-14 pb-[12px] border-[#D8D8D8] border-b-[0.55px]'><Text className='text-black text-xl font-[Poppins-Medium] ml-5'>Account</Text></View>
 

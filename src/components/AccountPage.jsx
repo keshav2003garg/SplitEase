@@ -7,7 +7,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import MI from 'react-native-vector-icons/MaterialIcons';
 import EN from 'react-native-vector-icons/Entypo';
 
-import { googleLogout } from '../actions/userActions';
+import { googleLogout, enableBiometric, disableBiometric } from '../actions/userActions';
 
 export default function AccountPage({ isModalVisible, handleSheet }) {
     const dispatch = useDispatch();
@@ -16,11 +16,21 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
 
     const handleConfirm = () => {
         setAlert(false);
-        Toast.show({
-            type: 'custom',
-            position: 'bottom',
-            text1: 'App lock set successfully',
-        });
+        if (isFingerPrintNeeded) {
+            Toast.show({
+                type: 'custom',
+                position: 'bottom',
+                text1: 'App lock removed successfully',
+            });
+            dispatch(disableBiometric());
+        } else {
+            Toast.show({
+                type: 'custom',
+                position: 'bottom',
+                text1: 'App lock set successfully',
+            });
+            dispatch(enableBiometric());
+        }
     }
 
     return (
@@ -96,7 +106,7 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
                 </View>
             </TouchableNativeFeedback>
 
-            <AwesomeAlert show={alert} showProgress={false} title={isFingerPrintNeeded ? 'Unlock' : 'Lock'} message={isFingerPrintNeeded ? 'Do you really wanna remove App Lock' : 'Do you really wanna set App Lock'} closeOnTouchOutside={true} closeOnHardwareBackPress={true} showCancelButton={true} showConfirmButton={true} cancelText="No" confirmText="Yes, Lock it" confirmButtonColor="#DD6B55" onCancelPressed={() => { setAlert(false) }} titleStyle={{ fontFamily: 'Poppins-Medium' }} onConfirmPressed={handleConfirm} messageStyle={{ fontFamily: 'Poppins-Regular' }} cancelButtonTextStyle={{ fontFamily: 'Poppins-Regular' }} confirmButtonTextStyle={{ fontFamily: 'Poppins-Regular' }} />
+            <AwesomeAlert show={alert} showProgress={false} title={isFingerPrintNeeded ? 'Unlock' : 'Lock'} message={isFingerPrintNeeded ? 'Do you really wanna remove App Lock' : 'Do you really wanna set App Lock'} closeOnTouchOutside={true} closeOnHardwareBackPress={true} showCancelButton={true} showConfirmButton={true} cancelText="No" confirmText={isFingerPrintNeeded ? 'Yes, Unlock it' : 'Yes, Lock it'} confirmButtonColor="#DD6B55" onCancelPressed={() => { setAlert(false) }} titleStyle={{ fontFamily: 'Poppins-Medium' }} onConfirmPressed={handleConfirm} messageStyle={{ fontFamily: 'Poppins-Regular' }} cancelButtonTextStyle={{ fontFamily: 'Poppins-Regular' }} confirmButtonTextStyle={{ fontFamily: 'Poppins-Regular' }} />
         </>
     )
 }

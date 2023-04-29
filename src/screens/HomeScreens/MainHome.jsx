@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { View, Text, StatusBar, Image, ScrollView, TouchableNativeFeedback } from 'react-native';
+import React, { useEffect, useState, useCallback } from "react";
+import { View, Text, StatusBar, Image, ScrollView, TouchableNativeFeedback, RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from "react-redux";
 import Icon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/FontAwesome5';
@@ -14,10 +14,16 @@ import { fetchGroups } from "../../actions/userActions";
 
 export default function MainHome({ navigation }) {
 	const dispatch = useDispatch();
-	const { groups, user } = useSelector(state => state.user);
+	const { groups, user, loading } = useSelector(state => state.user);
+	const [refreshing, setRefreshing] = useState(false);
 	useEffect(() => {
 		dispatch(fetchGroups(user.userID));
-	}, [groups]);
+	}, []);
+	const onRefresh = useCallback(() => {
+		setRefreshing(true);
+		dispatch(fetchGroups(user.userID));
+		if (!loading) setRefreshing(false);
+	}, []);
 	return (
 		<View className='flex-1 justify-between'>
 
@@ -30,7 +36,7 @@ export default function MainHome({ navigation }) {
 				</View>
 			</View>
 
-			<ScrollView className='h-[82.5%]'>
+			<ScrollView className='h-[82.5%]' refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
 
 				<View className='flex-row justify-between items-center mx-[17px] mt-[20px] mb-[7px]'>
 					<View>
