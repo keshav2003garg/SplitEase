@@ -51,7 +51,7 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
             <TouchableNativeFeedback onPress={() => { handleSheet('join') }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
                 <View className='px-5 py-3 flex-row items-center' >
                     <View><EN name='link' size={30} color={'black'} /></View>
-                    <Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Join by Link</Text>
+                    <Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Join by Code</Text>
                 </View>
             </TouchableNativeFeedback>
             <TouchableNativeFeedback onPress={() => { handleSheet('payment') }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
@@ -106,7 +106,7 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
                 </View>
             </TouchableNativeFeedback>
 
-            <AwesomeAlert show={alert} showProgress={false} title={isFingerPrintNeeded ? 'Unlock' : 'Lock'} message={isFingerPrintNeeded ? 'Do you really wanna remove App Lock' : 'Do you really wanna set App Lock'} closeOnTouchOutside={true} closeOnHardwareBackPress={true} showCancelButton={true} showConfirmButton={true} cancelText="No" confirmText={isFingerPrintNeeded ? 'Yes, Unlock it' : 'Yes, Lock it'} confirmButtonColor="#DD6B55" onCancelPressed={() => { setAlert(false) }} titleStyle={{ fontFamily: 'Poppins-Medium' }} onConfirmPressed={handleConfirm} messageStyle={{ fontFamily: 'Poppins-Regular' }} cancelButtonTextStyle={{ fontFamily: 'Poppins-Regular' }} confirmButtonTextStyle={{ fontFamily: 'Poppins-Regular' }} />
+            <AwesomeAlert show={alert} showProgress={false} title={isFingerPrintNeeded ? 'Unlock' : 'Lock'} message={isFingerPrintNeeded ? 'Do you really wanna remove App Lock' : 'Do you really wanna set App Lock'} closeOnTouchOutside={false} closeOnHardwareBackPress={true} showCancelButton={true} showConfirmButton={true} cancelText="No" confirmText={isFingerPrintNeeded ? 'Yes, Unlock it' : 'Yes, Lock it'} confirmButtonColor="#DD6B55" onCancelPressed={() => { setAlert(false) }} titleStyle={{ fontFamily: 'Poppins-Medium' }} onConfirmPressed={handleConfirm} messageStyle={{ fontFamily: 'Poppins-Regular' }} cancelButtonTextStyle={{ fontFamily: 'Poppins-Regular' }} confirmButtonTextStyle={{ fontFamily: 'Poppins-Regular' }} />
         </>
     )
 }

@@ -1,9 +1,12 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { View, Text, Image, TouchableNativeFeedback, BackHandler } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { trigger } from "react-native-haptic-feedback";
 import MI from 'react-native-vector-icons/MaterialIcons';
 import { SharedElement } from 'react-navigation-shared-element';
+
+import { fetchGroup } from '../../actions/userActions';
 
 import GroupSettings from '../../components/BottomSheetModals/GroupSettings';
 import Expenses from '../../components/GroupScreenTabs/Expenses';
@@ -13,6 +16,8 @@ import Payments from '../../components/GroupScreenTabs/Payments';
 
 const GroupMainScreen = ({ route, navigation }) => {
 	const { data } = route.params;
+	const dispatch = useDispatch();
+	const { groupInfo, localLoading } = useSelector(state => state.user);
 	const [tab, setTab] = useState({ expenses: true, balances: false, total: false, payments: false });
 	const [isModalVisible, setModalVisible] = useState(false);
 	const bottomSheetModalRef = useRef(null);
@@ -30,7 +35,9 @@ const GroupMainScreen = ({ route, navigation }) => {
 		}
 		return false;
 	});
-
+	useEffect(() => {
+		dispatch(fetchGroup(data.groupID));
+	}, []);
 	return (
 		<View pointerEvents={isModalVisible ? "none" : "auto"} className={`flex-1 ${isModalVisible ? 'bg-[#BEBEBE]' : 'bg-[#FFFFFf]'}`}>
 
@@ -39,12 +46,12 @@ const GroupMainScreen = ({ route, navigation }) => {
 			<TouchableNativeFeedback onPress={() => { navigation.goBack() }}><View className='absolute top-12 left-3'><MI name='arrow-back' color={'white'} size={25} /></View></TouchableNativeFeedback>
 			<TouchableNativeFeedback onPress={handleSheet} ><View className='absolute top-12 right-3'><MI name='settings' color={'white'} size={25} /></View></TouchableNativeFeedback>
 
-			<View className='absolute top-24 left-14 border-white border-[3px] rounded-xl overflow-hidden'><SharedElement id={`data.${data.groupImage}.image`}><Image className='w-24 h-24 rounded-lg' source={{ uri: data.groupImage }} /></SharedElement></View>
+			<View className='absolute top-24 left-14 border-white border-[3px] rounded-xl overflow-hidden'><SharedElement id={`data.${data.groupImage}.image`}><Image className='w-24 h-24' source={{ uri: groupInfo.groupImage }} /></SharedElement></View>
 
 			<View className='flex-[5_5_0%]'>
 
 				<View className='mt-16 ml-14'>
-					<Text className='text-black text-[20px] font-[Poppins-Medium]'>{data.groupName}</Text>
+					{localLoading ? <View className='my-1 w-20 h-5 rounded-full bg-[#D8D8D8]'></View> : <Text className='text-black text-[20px] font-[Poppins-Medium]'>{groupInfo.groupName}</Text>}
 					<Text className='text-black text-sm font-[Poppins-Medium]'>Akshat owes you ₹775</Text>
 				</View>
 
@@ -77,7 +84,7 @@ const GroupMainScreen = ({ route, navigation }) => {
 				{tab.payments && <Payments />}
 
 				<BottomSheetModal name='settings' ref={bottomSheetModalRef} index={0} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: '#fff', borderRadius: 40, }} onChange={() => { setModalVisible(true) }} onDismiss={() => { setModalVisible(false) }} >
-					<GroupSettings />
+					<GroupSettings data={data} sheet={bottomSheetModalRef.current} navigation={navigation} />
 				</BottomSheetModal>
 
 			</View>

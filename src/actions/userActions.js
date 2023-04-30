@@ -3,7 +3,12 @@ import {
     GOOGLE_LOGOUT__REQUEST, GOOGLE_LOGOUT__SUCCESS, GOOGLE_LOGOUT__FAIL,
     CREATE_GROUP__REQUEST, CREATE_GROUP__SUCCESS, CREATE_GROUP__FAIL,
     FETCH_GROUPS__REQUEST, FETCH_GROUPS__SUCCESS, FETCH_GROUPS__FAIL,
+    FETCH_GROUP__REQUEST, FETCH_GROUP__SUCCESS, FETCH_GROUP__FAIL,
     JOIN_GROUP__REQUEST, JOIN_GROUP__SUCCESS, JOIN_GROUP__NOT_SUCCESS, JOIN_GROUP__FAIL,
+    FETCH_GROUP_MEMBERS__REQUEST, FETCH_GROUP_MEMBERS__SUCCESS, FETCH_GROUP_MEMBERS__FAIL,
+    LEAVE_GROUP__REQUEST, LEAVE_GROUP__SUCCESS, LEAVE_GROUP__FAIL,
+    DELETE_GROUP__REQUEST, DELETE_GROUP__SUCCESS, DELETE_GROUP__FAIL,
+    UPDATE_GROUP__REQUEST, UPDATE_GROUP__SUCCESS, UPDATE_GROUP__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__MESSAGES, CLEAR__ERRORS,
@@ -16,6 +21,8 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import messaging from "@react-native-firebase/messaging";
+
+
 
 const googleRegister = () => {
     return (
@@ -83,6 +90,7 @@ const googleRegister = () => {
 }
 
 
+
 const googleLogout = () => {
     return (
         async (dispatch) => {
@@ -109,10 +117,18 @@ const googleLogout = () => {
 }
 
 
+
 const createGroup = ({ name, type, image, members }) => {
     return (
         async (dispatch) => {
             try {
+                if (!name) {
+                    dispatch({
+                        type: CREATE_GROUP__FAIL,
+                        payload: 'Please Enter Group Name'
+                    })
+                    return;
+                }
                 dispatch({
                     type: CREATE_GROUP__REQUEST
                 })
@@ -162,6 +178,7 @@ const createGroup = ({ name, type, image, members }) => {
 }
 
 
+
 const fetchGroups = (userID) => {
     return (
         async (dispatch) => {
@@ -202,6 +219,8 @@ const fetchGroups = (userID) => {
     )
 }
 
+
+
 const joinGroup = (userID, joinCode) => {
     return (
         async (dispatch) => {
@@ -209,6 +228,16 @@ const joinGroup = (userID, joinCode) => {
                 dispatch({
                     type: JOIN_GROUP__REQUEST
                 })
+                if (!joinCode) {
+                    const data = {
+                        error: 'Join Code is Required',
+                    }
+                    dispatch({
+                        type: JOIN_GROUP__NOT_SUCCESS,
+                        payload: data,
+                    })
+                    return;
+                }
                 const fireBase = await firestore().collection('groups').where('joinCode', '==', joinCode).get();
                 if (fireBase.empty) {
                     const data = {
@@ -262,6 +291,185 @@ const joinGroup = (userID, joinCode) => {
         }
     )
 }
+
+
+const fetchMembers = (groupID) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: FETCH_GROUP_MEMBERS__REQUEST
+                })
+                const fireBase = await firestore().collection('groups').doc(groupID).get();
+                const groupMembers = fireBase.data().groupMembers;
+                const members = [];
+                for (let i = 0; i < groupMembers.length; i++) {
+                    const member = await firestore().collection('users').doc(groupMembers[i]).get();
+                    members.push({
+                        userID: member.id,
+                        name: member.data().name,
+                        email: member.data().email,
+                        avatar: member.data().avatar,
+                    });
+                }
+                const data = {
+                    message: 'Members Fetched Successfully',
+                    groupMembers: members,
+                }
+                dispatch({
+                    type: FETCH_GROUP_MEMBERS__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: FETCH_GROUP_MEMBERS__FAIL,
+                    payload: error.response
+                })
+            }
+        }
+    )
+}
+
+
+
+const leaveGroup = (userID, groupID) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: LEAVE_GROUP__REQUEST
+                })
+                await firestore().collection('groups').doc(groupID).update({
+                    groupMembers: firestore.FieldValue.arrayRemove(userID)
+                });
+                await firestore().collection('users').doc(userID).update({
+                    groupsJoined: firestore.FieldValue.arrayRemove(groupID)
+                });
+                const data = {
+                    message: 'Group Left Successfully',
+                    groupID: groupID,
+                }
+                dispatch({
+                    type: LEAVE_GROUP__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: LEAVE_GROUP__FAIL,
+                    payload: error.response
+                })
+            }
+        }
+    )
+}
+
+
+
+const deleteGroup = (userID, groupID) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: DELETE_GROUP__REQUEST
+                })
+                await firestore().collection('groups').doc(groupID).delete();
+                await firestore().collection('users').doc(userID).update({
+                    groupsJoined: firestore.FieldValue.arrayRemove(groupID)
+                });
+                const data = {
+                    message: 'Group Deleted Successfully',
+                    groupID: groupID,
+                }
+                dispatch({
+                    type: DELETE_GROUP__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: DELETE_GROUP__FAIL,
+                    payload: error.response
+                })
+            }
+        }
+    )
+}
+
+
+const updateGroup = (groupID, groupName) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: UPDATE_GROUP__REQUEST
+                })
+                if (!groupName) {
+                    dispatch({
+                        type: UPDATE_GROUP__FAIL,
+                        payload: 'Group Name is Required',
+                    })
+                    return;
+                }
+                await firestore().collection('groups').doc(groupID).update({
+                    groupName: groupName,
+                });
+                const data = {
+                    message: 'Group Updated Successfully',
+                }
+                dispatch({
+                    type: UPDATE_GROUP__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: UPDATE_GROUP__FAIL,
+                    payload: error.response
+                })
+            }
+        }
+    )
+}
+
+
+const fetchGroup = (groupID) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: FETCH_GROUP__REQUEST
+                })
+                const fireBase = await firestore().collection('groups').doc(groupID).get();
+                const data = {
+                    message: 'Group Fetched Successfully',
+                    group: {
+                        groupID: fireBase.id,
+                        groupName: fireBase.data().groupName,
+                        groupType: fireBase.data().groupType,
+                        groupImage: fireBase.data().groupImage,
+                        groupMembers: fireBase.data().groupMembers,
+                        joinCode: fireBase.data().joinCode,
+                    },
+                }
+                dispatch({
+                    type: FETCH_GROUP__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: FETCH_GROUP__FAIL,
+                    payload: error.response
+                })
+            }
+        }
+    )
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -322,7 +530,7 @@ const disableBiometric = () => {
 
 export {
     googleRegister, googleLogout,
-    createGroup, fetchGroups, joinGroup,
+    createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup,
 
     clearErrors, clearMessages, bottomTabVisible, bottomTabHidden, enableBiometric, disableBiometric
 };

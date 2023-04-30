@@ -10,7 +10,7 @@ export default function GroupList({ data }) {
     return (
         <TouchableNativeFeedback onPress={() => { navigation.navigate('GroupMainScreen', { data }) }}>
             <View className='flex-row mx-[20px] mt-[17px]'>
-                <SharedElement id={`data.${groupImage}.image`}><Image source={{ uri: groupImage }} className='w-[120px] h-[120px] mr-[10px] rounded-[10px]' /></SharedElement>
+                <SharedElement id={`data.${groupImage}.image`}><Image source={{ uri: groupImage }} className='w-[120px] h-[120px] mr-[10px] rounded-xl' /></SharedElement>
                 <View className='mx-[10px] justify-center'>
                     <Text className='text-black text-[16px] font-[Poppins-Medium]'>{groupName}</Text>
                     <Text className='text-[#03a37e] text-[16px] font-[Poppins-Medium]'>you are owed ₹64</Text>
