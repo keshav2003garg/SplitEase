@@ -29,7 +29,7 @@ export default function GroupSettings({ data, sheet, navigation }) {
 	};
 
 	const handleLeave = () => {
-		dispatch(leaveGroup(user.userID,data.groupID));
+		dispatch(leaveGroup(user.userID, data.groupID));
 		navigation.navigate("MainHome");
 		if (!spinLoading) {
 			sheet.forceClose();
@@ -81,8 +81,8 @@ export default function GroupSettings({ data, sheet, navigation }) {
 					<Text className='ml-6 text-[#B9261C] text-base font-[Poppins-Regular]'>Leave Group</Text>
 				</View>
 			</TouchableNativeFeedback>
-			<TouchableNativeFeedback onPress={handleDelete} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
-				<View className='px-5 py-3 flex-row items-center'>
+			<TouchableNativeFeedback onPress={handleDelete} disabled={groupInfo.createdBy !== user.userID} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
+				<View className={`px-5 py-3 flex-row items-center ${groupInfo.createdBy !== user.userID ? 'opacity-70' : 'opacity-100'}`}>
 					<View><MI name='delete' size={30} color={'#B9261C'} /></View>
 					<Text className='ml-6 text-[#B9261C] text-base font-[Poppins-Regular]'>Delete Group</Text>
 				</View>

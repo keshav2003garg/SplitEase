@@ -31,9 +31,7 @@ const GroupMainScreen = ({ route, navigation }) => {
 		if (isModalVisible) {
 			bottomSheetModalRef.current?.close();
 			setModalVisible(false);
-			return true;
 		}
-		return false;
 	});
 	useEffect(() => {
 		dispatch(fetchGroup(data.groupID));

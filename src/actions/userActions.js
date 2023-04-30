@@ -159,6 +159,7 @@ const createGroup = ({ name, type, image, members }) => {
                         groupImage: image,
                         groupMembers: members,
                         joinCode: code,
+                        createdBy: members[0]
                     },
 
                 }
@@ -199,6 +200,7 @@ const fetchGroups = (userID) => {
                         groupImage: group.data().groupImage,
                         groupMembers: group.data().groupMembers,
                         joinCode: group.data().joinCode,
+                        createdBy: group.data().createdBy,
                     });
                 }
                 const data = {
@@ -274,6 +276,7 @@ const joinGroup = (userID, joinCode) => {
                                 groupImage: fireBase.docs[0].data().groupImage,
                                 groupMembers: fireBase.docs[0].data().groupMembers,
                                 joinCode: fireBase.docs[0].data().joinCode,
+                                createdBy: fireBase.docs[0].data().createdBy,
                             },
                         }
                         dispatch({
@@ -447,6 +450,7 @@ const fetchGroup = (groupID) => {
                         groupImage: fireBase.data().groupImage,
                         groupMembers: fireBase.data().groupMembers,
                         joinCode: fireBase.data().joinCode,
+                        createdBy: fireBase.data().createdBy,
                     },
                 }
                 dispatch({
