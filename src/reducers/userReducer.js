@@ -9,6 +9,9 @@ import {
     LEAVE_GROUP__REQUEST, LEAVE_GROUP__SUCCESS, LEAVE_GROUP__FAIL,
     DELETE_GROUP__REQUEST, DELETE_GROUP__SUCCESS, DELETE_GROUP__FAIL,
     UPDATE_GROUP__REQUEST, UPDATE_GROUP__SUCCESS, UPDATE_GROUP__FAIL,
+    FETCH_USER_DETAILS__REQUEST, FETCH_USER_DETAILS__SUCCESS, FETCH_USER_DETAILS__FAIL,
+    UPDATE_USER_DETAILS__REQUEST, UPDATE_USER_DETAILS__SUCCESS, UPDATE_USER_DETAILS__FAIL,
+    UPDATE_PAYMENT_DETAILS__REQUEST, UPDATE_PAYMENT_DETAILS__SUCCESS, UPDATE_PAYMENT_DETAILS__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__ERRORS, CLEAR__MESSAGES,
@@ -37,11 +40,14 @@ const userReducer = (state = initialState, action) => {
             }
         case FETCH_GROUP_MEMBERS__REQUEST:
         case FETCH_GROUP__REQUEST:
+        case FETCH_USER_DETAILS__REQUEST:
             return {
                 ...state,
                 localLoading: true,
             }
         case UPDATE_GROUP__REQUEST:
+        case UPDATE_USER_DETAILS__REQUEST:
+        case UPDATE_PAYMENT_DETAILS__REQUEST:
             return {
                 ...state,
                 spinLoading: true,
@@ -127,6 +133,26 @@ const userReducer = (state = initialState, action) => {
                 localLoading: false,
                 groupInfo: action.payload.group
             }
+        case FETCH_USER_DETAILS__SUCCESS:
+            return {
+                ...state,
+                localLoading: false,
+                user: {...state.user, ...action.payload.user}
+            }
+        case UPDATE_USER_DETAILS__SUCCESS:
+            return {
+                ...state,
+                spinLoading: false,
+                message: action.payload.message,
+                user: {...state.user, ...action.payload.user}
+            }
+        case UPDATE_PAYMENT_DETAILS__SUCCESS:
+            return {
+                ...state,
+                spinLoading: false,
+                message: action.payload.message,
+                user: {...state.user, ...action.payload.user}
+            }
 
 
 
@@ -151,12 +177,15 @@ const userReducer = (state = initialState, action) => {
             }
         case FETCH_GROUP_MEMBERS__FAIL:
         case FETCH_GROUP__FAIL:
+        case FETCH_USER_DETAILS__FAIL:
             return {
                 ...state,
                 localLoading: false,
                 error: action.payload
             }
         case UPDATE_GROUP__FAIL:
+        case UPDATE_USER_DETAILS__FAIL:
+        case UPDATE_PAYMENT_DETAILS__FAIL:
             return {
                 ...state,
                 spinLoading: false,

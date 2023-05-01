@@ -31,7 +31,7 @@ export default function Account({ navigation }) {
 
 			<AccountPage isModalVisible={isModalVisible} handleSheet={handleSheet} />
 
-			<BottomSheetModal name='profile' ref={ref => (bottomSheetRef.current['profile'] = ref)} index={0} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: '#fff', borderRadius: 40, }} onChange={() => { setModalVisible({ ...isModalVisible, visible: true, components: { profile: true } }) }} onDismiss={() => { setModalVisible({ ...isModalVisible, visible: false, components: { profile: false } }) }} >
+			<BottomSheetModal name='profile' ref={ref => (bottomSheetRef.current['profile'] = ref)} index={0} snapPoints={['53%', "90"]} backgroundStyle={{ backgroundColor: '#fff', borderRadius: 40, }} onChange={() => { setModalVisible({ ...isModalVisible, visible: true, components: { profile: true } }) }} onDismiss={() => { setModalVisible({ ...isModalVisible, visible: false, components: { profile: false } }) }} >
 				<Profile sheet={bottomSheetRef.current['profile']} />
 			</BottomSheetModal>
 
@@ -39,7 +39,7 @@ export default function Account({ navigation }) {
 				<JoinByLink sheet={bottomSheetRef.current['join']} />
 			</BottomSheetModal>
 
-			<BottomSheetModal name='payment' ref={ref => (bottomSheetRef.current['payment'] = ref)} index={0} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: '#fff', borderRadius: 40, }} onChange={() => { setModalVisible({ ...isModalVisible, visible: true, components: { payment: true } }) }} onDismiss={() => { setModalVisible({ ...isModalVisible, visible: false, components: { payment: false } }) }} >
+			<BottomSheetModal name='payment' ref={ref => (bottomSheetRef.current['payment'] = ref)} index={0} snapPoints={['37%', "90"]} backgroundStyle={{ backgroundColor: '#fff', borderRadius: 40, }} onChange={() => { setModalVisible({ ...isModalVisible, visible: true, components: { payment: true } }) }} onDismiss={() => { setModalVisible({ ...isModalVisible, visible: false, components: { payment: false } }) }} >
 				<PaymentDetails sheet={bottomSheetRef.current['payment']} />
 			</BottomSheetModal>
 

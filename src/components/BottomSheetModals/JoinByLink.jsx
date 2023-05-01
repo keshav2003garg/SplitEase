@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableNativeFeedback, TextInput } from 'react-native';
+import { View, Text, TouchableNativeFeedback } from 'react-native';
+import { TextInput } from 'react-native-paper';
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { useDispatch, useSelector } from 'react-redux';
 import { trigger } from "react-native-haptic-feedback";
@@ -14,20 +15,19 @@ export default function JoinByLink({ sheet }) {
     const handleJoin = () => {
         trigger("impactMedium");
         dispatch(joinGroup(user.userID, link));
-        if(!loading) sheet.forceClose();
+        if (!loading) sheet.forceClose();
     }
 
     return (
         <View className='flex-1'>
-            <View className='flex-row-reverse px-5 py-3 border-b-[0.55px] border-[#D8D8D8]'>
-                <TouchableNativeFeedback onPress={handleJoin} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
-                    <View className='px-5 py-3 bg-[#A5A5A5] rounded-xl'><Text className='text-[#5A5A5A] text-base font-[Poppins-Regular]'>Join</Text></View>
-                </TouchableNativeFeedback>
-            </View>
 
-            <Text className='text-center my-5 text-black text-xl font-[Poppins-Medium]'>Enter Group Code</Text>
+            <View className='mt-5 pb-[12px] border-[#D8D8D8] border-b-[0.55px]'><Text className='text-black text-xl font-[Poppins-Medium] ml-5'>Join a Group</Text></View>
 
-            <TextInput value={link} className='mx-6 px-3 py-3 text-black text-lg font-[Poppins-Medium] border-slate-200 border-[1px] rounded-md' placeholderTextColor='#5A5A5A' onChangeText={(text) => { setLink(text) }} onFocus={() => { sheet.expand() }} />
+            <TextInput value={link} className='mx-7 my-3' label={<Text className='text-base font-[Poppins-Medium]'>Enter Group Code</Text>} contentStyle={{ fontFamily: 'Poppins-Medium' }} mode='outlined' outlineColor='#5A5A5A' activeOutlineColor='#5A5A5A' outlineStyle={{ backgroundColor: 'white' }} onChangeText={(text) => { setLink(text) }} onFocus={() => { sheet.expand() }} />
+
+            <TouchableNativeFeedback onPress={handleJoin} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
+                <View className='mx-7 py-3 bg-[#A5A5A5] rounded-xl'><Text className='text-[#5A5A5A] text-center text-base font-[Poppins-Medium]'>Join</Text></View>
+            </TouchableNativeFeedback>
 
         </View>
     )

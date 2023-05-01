@@ -1,5 +1,5 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
-import { View, Text, Image, TouchableNativeFeedback, BackHandler } from 'react-native';
+import { View, Text, Image, TouchableNativeFeedback, BackHandler, StatusBar } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { trigger } from "react-native-haptic-feedback";
@@ -39,17 +39,19 @@ const GroupMainScreen = ({ route, navigation }) => {
 	return (
 		<View pointerEvents={isModalVisible ? "none" : "auto"} className={`flex-1 ${isModalVisible ? 'bg-[#BEBEBE]' : 'bg-[#FFFFFf]'}`}>
 
+			<StatusBar barStyle='light-content' />
+
 			<Image className='flex-1' source={require('../../../assets/img/group-bg.png')} />
 
 			<TouchableNativeFeedback onPress={() => { navigation.goBack() }}><View className='absolute top-12 left-3'><MI name='arrow-back' color={'white'} size={25} /></View></TouchableNativeFeedback>
 			<TouchableNativeFeedback onPress={handleSheet} ><View className='absolute top-12 right-3'><MI name='settings' color={'white'} size={25} /></View></TouchableNativeFeedback>
 
-			<View className='absolute top-24 left-14 border-white border-[3px] rounded-xl overflow-hidden'><SharedElement id={`data.${data.groupImage}.image`}><Image className='w-24 h-24' source={{ uri: groupInfo.groupImage }} /></SharedElement></View>
+			<View className='absolute top-24 left-14 border-white border-[3px] rounded-xl overflow-hidden'><SharedElement id={`data.${data.groupImage}.image`}><Image className='w-24 h-24' source={{ uri: data.groupImage || groupInfo.groupImage }} /></SharedElement></View>
 
 			<View className='flex-[5_5_0%]'>
 
 				<View className='mt-16 ml-14'>
-					{localLoading ? <View className='my-1 w-20 h-5 rounded-full bg-[#D8D8D8]'></View> : <Text className='text-black text-[20px] font-[Poppins-Medium]'>{groupInfo.groupName}</Text>}
+					{localLoading ? <View className='my-1 w-20 h-5 rounded-full bg-[#D8D8D8]'></View> : <Text className='text-black text-[20px] font-[Poppins-Medium]'>{data.groupName || groupInfo.groupName}</Text>}
 					<Text className='text-black text-sm font-[Poppins-Medium]'>Akshat owes you ₹775</Text>
 				</View>
 

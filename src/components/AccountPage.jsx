@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableNativeFeedback, Linking, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import NotificationSetting from 'react-native-open-notification';
@@ -7,7 +7,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import MI from 'react-native-vector-icons/MaterialIcons';
 import EN from 'react-native-vector-icons/Entypo';
 
-import { googleLogout, enableBiometric, disableBiometric } from '../actions/userActions';
+import { googleLogout, enableBiometric, disableBiometric, fetchUserDetails } from '../actions/userActions';
 
 export default function AccountPage({ isModalVisible, handleSheet }) {
     const dispatch = useDispatch();
@@ -33,6 +33,9 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
         }
     }
 
+    useEffect(() => {
+        dispatch(fetchUserDetails(user.userID));
+    }, []);
     return (
         <>
             <View className='px-4 mt-5 pb-3 flex-row justify-between items-center'>
@@ -97,7 +100,7 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
                 </View>
             </TouchableNativeFeedback>
 
-            <View className={`my-3 border-b-2`} style={{ borderColor: `${isModalVisible ? '#AAAAAA' : '#D8D8D8'}` }}></View>
+            <View className={`my-3 border-b-2`} style={{ borderColor: `${isModalVisible.visible ? '#AAAAAA' : '#D8D8D8'}` }}></View>
 
             <TouchableNativeFeedback onPress={() => { dispatch(googleLogout()) }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
                 <View className='px-5 py-3 flex-row items-center'>

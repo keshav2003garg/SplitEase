@@ -9,6 +9,9 @@ import {
     LEAVE_GROUP__REQUEST, LEAVE_GROUP__SUCCESS, LEAVE_GROUP__FAIL,
     DELETE_GROUP__REQUEST, DELETE_GROUP__SUCCESS, DELETE_GROUP__FAIL,
     UPDATE_GROUP__REQUEST, UPDATE_GROUP__SUCCESS, UPDATE_GROUP__FAIL,
+    FETCH_USER_DETAILS__REQUEST, FETCH_USER_DETAILS__SUCCESS, FETCH_USER_DETAILS__FAIL,
+    UPDATE_USER_DETAILS__REQUEST, UPDATE_USER_DETAILS__SUCCESS, UPDATE_USER_DETAILS__FAIL,
+    UPDATE_PAYMENT_DETAILS__REQUEST, UPDATE_PAYMENT_DETAILS__SUCCESS, UPDATE_PAYMENT_DETAILS__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__MESSAGES, CLEAR__ERRORS,
@@ -44,6 +47,12 @@ const googleRegister = () => {
                         avatar: res.user.photo,
                         deviceToken: deviceToken,
                         createdAt: firestore.FieldValue.serverTimestamp(),
+                        phoneNumber: '',
+                        groupsJoined: [],
+                        paymentDetails: {
+                            upi: '',
+                            paytm: '',
+                        }
                     })
                     const data = {
                         message: 'Registered Successfully',
@@ -54,6 +63,13 @@ const googleRegister = () => {
                             avatar: res.user.photo,
                             authToken: res.idToken,
                             deviceToken: deviceToken,
+                            createdAt: firestore.FieldValue.serverTimestamp(),
+                            phoneNumber: '',
+                            groupsJoined: [],
+                            paymentDetails: {
+                                upi: '',
+                                paytm: '',
+                            }
                         }
                     }
                     dispatch({
@@ -71,6 +87,13 @@ const googleRegister = () => {
                             avatar: res.user.photo,
                             authToken: res.idToken,
                             deviceToken: deviceToken,
+                            createdAt: '',
+                            phoneNumber: '',
+                            groupsJoined: [],
+                            paymentDetails: {
+                                upi: '',
+                                paytm: '',
+                            }
                         }
                     }
                     dispatch({
@@ -296,6 +319,7 @@ const joinGroup = (userID, joinCode) => {
 }
 
 
+
 const fetchMembers = (groupID) => {
     return (
         async (dispatch) => {
@@ -398,6 +422,7 @@ const deleteGroup = (userID, groupID) => {
 }
 
 
+
 const updateGroup = (groupID, groupName) => {
     return (
         async (dispatch) => {
@@ -433,6 +458,7 @@ const updateGroup = (groupID, groupName) => {
 }
 
 
+
 const fetchGroup = (groupID) => {
     return (
         async (dispatch) => {
@@ -466,6 +492,140 @@ const fetchGroup = (groupID) => {
         }
     )
 }
+
+
+
+const fetchUserDetails = (userID) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: FETCH_USER_DETAILS__REQUEST
+                })
+                const fireBase = await firestore().collection('users').doc(userID).get();
+                const data = {
+                    message: 'User Details Fetched Successfully',
+                    user: {
+                        userID: fireBase.id,
+                        name: fireBase.data().name,
+                        email: fireBase.data().email,
+                        avatar: fireBase.data().avatar,
+                        deviceToken: fireBase.data().deviceToken,
+                        createdAt: fireBase.data().createdAt,
+                        phoneNumber: fireBase.data().phoneNumber,
+                        groupsJoined: fireBase.data().groupsJoined,
+                        paymentDetails: fireBase.data().paymentDetails,
+                    },
+                }
+                dispatch({
+                    type: FETCH_USER_DETAILS__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: FETCH_USER_DETAILS__FAIL,
+                    payload: error.response
+                })
+            }
+        }
+    )
+}
+
+
+
+const updateUserDetails = (userID, { name, email, phone }) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: UPDATE_USER_DETAILS__REQUEST
+                })
+                if (!name) {
+                    dispatch({
+                        type: UPDATE_USER_DETAILS__FAIL,
+                        payload: 'Name is Required',
+                    })
+                    return;
+                }
+                if (!email) {
+                    dispatch({
+                        type: UPDATE_USER_DETAILS__FAIL,
+                        payload: 'Email is Required',
+                    })
+                    return;
+                }
+                await firestore().collection('users').doc(userID).update({
+                    name: name,
+                    email: email,
+                    phoneNumber: phone,
+                });
+                const data = {
+                    message: 'Details Updated Successfully',
+                    user: {
+                        name: name,
+                        email: email,
+                        phoneNumber: phone,
+                    },
+                }
+                dispatch({
+                    type: UPDATE_USER_DETAILS__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: UPDATE_USER_DETAILS__FAIL,
+                    payload: error.response
+                })
+            }
+        }
+    )
+}
+
+
+
+const updatePamentDetails = (userID, { upi, paytm }) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: UPDATE_PAYMENT_DETAILS__REQUEST
+                })
+                if (!upi && !paytm) {
+                    dispatch({
+                        type: UPDATE_PAYMENT_DETAILS__FAIL,
+                        payload: 'Atleast one Payment Detail is Required',
+                    })
+                    return;
+                }
+                await firestore().collection('users').doc(userID).update({
+                    paymentDetails: {
+                        upi: upi,
+                        paytm: paytm,
+                    }
+                });
+                const data = {
+                    message: 'Payment Details Updated Successfully',
+                    user: {
+                        paymentDetails: {
+                            upi: upi,
+                            paytm: paytm,
+                        }
+                    },
+                }
+                dispatch({
+                    type: UPDATE_PAYMENT_DETAILS__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: UPDATE_PAYMENT_DETAILS__FAIL,
+                    payload: error.response
+                })
+            }
+        }
+    )
+}
+
 
 
 
@@ -535,6 +695,7 @@ const disableBiometric = () => {
 export {
     googleRegister, googleLogout,
     createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup,
+    fetchUserDetails, updateUserDetails, updatePamentDetails,
 
     clearErrors, clearMessages, bottomTabVisible, bottomTabHidden, enableBiometric, disableBiometric
 };
