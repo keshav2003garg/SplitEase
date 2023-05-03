@@ -17,7 +17,7 @@ import Payments from '../../components/GroupScreenTabs/Payments';
 const GroupMainScreen = ({ route, navigation }) => {
 	const { data } = route.params;
 	const dispatch = useDispatch();
-	const { groupInfo, localLoading } = useSelector(state => state.user);
+	const { groupInfo, localLoading, user } = useSelector(state => state.user);
 	const [tab, setTab] = useState({ expenses: true, balances: false, total: false, payments: false });
 	const [isModalVisible, setModalVisible] = useState(false);
 	const bottomSheetModalRef = useRef(null);
@@ -78,7 +78,7 @@ const GroupMainScreen = ({ route, navigation }) => {
 					</TouchableNativeFeedback>
 				</View>
 
-				{tab.expenses && <Expenses />}
+				{tab.expenses && <Expenses data={groupInfo} user={user} />}
 				{tab.balances && <Balances />}
 				{tab.total && <Total />}
 				{tab.payments && <Payments />}

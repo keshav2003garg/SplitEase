@@ -12,6 +12,7 @@ import {
     FETCH_USER_DETAILS__REQUEST, FETCH_USER_DETAILS__SUCCESS, FETCH_USER_DETAILS__FAIL,
     UPDATE_USER_DETAILS__REQUEST, UPDATE_USER_DETAILS__SUCCESS, UPDATE_USER_DETAILS__FAIL,
     UPDATE_PAYMENT_DETAILS__REQUEST, UPDATE_PAYMENT_DETAILS__SUCCESS, UPDATE_PAYMENT_DETAILS__FAIL,
+    ADD_EXPENSE__REQUEST, ADD_EXPENSE__SUCCESS, ADD_EXPENSE__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__ERRORS, CLEAR__MESSAGES,
@@ -29,6 +30,7 @@ const userReducer = (state = initialState, action) => {
         case JOIN_GROUP__REQUEST:
         case LEAVE_GROUP__REQUEST:
         case DELETE_GROUP__REQUEST:
+        case ADD_EXPENSE__REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -153,6 +155,12 @@ const userReducer = (state = initialState, action) => {
                 message: action.payload.message,
                 user: {...state.user, ...action.payload.user}
             }
+        case ADD_EXPENSE__SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                message: action.payload.message,
+            }
 
 
 
@@ -164,6 +172,7 @@ const userReducer = (state = initialState, action) => {
         case JOIN_GROUP__FAIL:
         case LEAVE_GROUP__FAIL:
         case DELETE_GROUP__FAIL:
+        case ADD_EXPENSE__FAIL:
             return {
                 ...state,
                 loading: false,
