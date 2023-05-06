@@ -1,26 +1,28 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, FlatList } from 'react-native';
 import MI from 'react-native-vector-icons/MaterialIcons';
 
-export default function Expenses({ data, user }) {
+export default function Expenses({ data, user, loading }) {
     const { expenses } = data;
     return (
-        <ScrollView>
+        <View>
 
-            <Text className='text-[15px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>April 2023</Text>
-            {expenses.length > 0 ?
-                expenses.map((item, index) => { return (<ExpenseList key={index} item={item} user={user} />) })
+            {loading ?
+                <Loading />
                 :
-                <View className='flex-1 justify-center items-center'><MI name='error-outline' size={50} color={'black'} /><Text className='text-[#5A5A5A] font-[Poppins-Medium]'>No Expenses</Text></View>
+                expenses.length > 0 ?
+                    <FlatList data={expenses} renderItem={({ item, index }) => <ExpenseList key={index} item={item} user={user} />} />
+                    :
+                    <View className='mt-5 flex-1 justify-center items-center'><MI name='error-outline' size={50} color={'black'} /><Text className='text-[#5A5A5A] font-[Poppins-Medium]'>No Expenses</Text></View>
             }
 
-        </ScrollView>
+        </View>
     )
 }
 
 
 const ExpenseList = ({ item, user }) => {
-    const date = new Date(item.expenseCreatedAt.toDate());
+    const date = new Date(item.expenseCreatedAt.seconds * 1000 + item.expenseCreatedAt.nanoseconds / 1000000);
     return (
         <View className='flex-row justify-between items-center bg-slate-50 my-2 mx-3 p-2 rounded-md'>
             <View className='flex-row items-center'>
@@ -36,8 +38,17 @@ const ExpenseList = ({ item, user }) => {
             </View>
             <View className='items-end'>
                 <Text className='text-[13px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>you {item.expensePaidBy.userID === user.userID ? 'lend' : 'borrowed'}</Text>
-                <Text className='text-[17px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>₹{item.expensePaidBy.userID === user.userID ? item.expenseAmount - item.expenseAmountPerHead : item.expenseAmountPerHead}</Text>
+                <Text className='text-[17px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>₹{item.expensePaidBy.userID === user.userID ? (item.expenseAmount - item.expenseAmountPerHead).toFixed(0) : item.expenseAmountPerHead}</Text>
             </View>
         </View>
+    )
+}
+
+const Loading = () => {
+    return (
+        <>
+            <View className='my-2 mx-3 w-max h-16 rounded-md bg-[#D8D8D8]'></View>
+            <View className='my-2 mx-3 w-max h-16 rounded-md bg-[#D8D8D8]'></View>
+        </>
     )
 }

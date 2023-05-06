@@ -44,8 +44,8 @@ export default function MainHome({ navigation }) {
 
 					<View className='flex-row justify-between items-center mx-[17px] mt-[20px] mb-[7px]'>
 						<View>
-							<Text className='text-black text-[16px] font-[Poppins-Medium]'>Overall, you owe <Text className='text-[#ed4f00] text-[16px] font-[Poppins-SemiBold]'>₹ 775</Text></Text>
-							<Text className='text-black text-[16px] font-[Poppins-Medium]'>and you are owed <Text className='text-[#03a37e] text-[16px] font-[Poppins-SemiBold]'>₹ 132</Text></Text>
+							<Text className='text-black text-[16px] font-[Poppins-Medium]'>Overall, you borrow <Text className='text-[#ed4f00] text-[16px] font-[Poppins-SemiBold]'>₹ {user.you_borrow.toFixed(0)}</Text></Text>
+							<Text className='text-black text-[16px] font-[Poppins-Medium]'>and you are lend <Text className='text-[#03a37e] text-[16px] font-[Poppins-SemiBold]'>₹ {user.you_lend.toFixed(0)}</Text></Text>
 						</View>
 						<Icon name='md-options-sharp' color='#5A5A5A' size={32} />
 					</View>

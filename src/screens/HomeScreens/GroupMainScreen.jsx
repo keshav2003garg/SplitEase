@@ -6,7 +6,7 @@ import { trigger } from "react-native-haptic-feedback";
 import MI from 'react-native-vector-icons/MaterialIcons';
 import { SharedElement } from 'react-navigation-shared-element';
 
-import { fetchGroup } from '../../actions/userActions';
+import { fetchGroup, fetchbalance } from '../../actions/userActions';
 
 import GroupSettings from '../../components/BottomSheetModals/GroupSettings';
 import Expenses from '../../components/GroupScreenTabs/Expenses';
@@ -17,7 +17,7 @@ import Payments from '../../components/GroupScreenTabs/Payments';
 const GroupMainScreen = ({ route, navigation }) => {
 	const { data } = route.params;
 	const dispatch = useDispatch();
-	const { groupInfo, localLoading, user } = useSelector(state => state.user);
+	const { groupInfo, localLoading, user, balance, tabLoading, total } = useSelector(state => state.user);
 	const [tab, setTab] = useState({ expenses: true, balances: false, total: false, payments: false });
 	const [isModalVisible, setModalVisible] = useState(false);
 	const bottomSheetModalRef = useRef(null);
@@ -34,7 +34,8 @@ const GroupMainScreen = ({ route, navigation }) => {
 		}
 	});
 	useEffect(() => {
-		dispatch(fetchGroup(data.groupID));
+		dispatch(fetchGroup(data.groupID, user.userID));
+		dispatch(fetchbalance(user.userID, data.groupID));
 	}, []);
 	return (
 		<View pointerEvents={isModalVisible ? "none" : "auto"} className={`flex-1 ${isModalVisible ? 'bg-[#BEBEBE]' : 'bg-[#FFFFFf]'}`}>
@@ -51,8 +52,37 @@ const GroupMainScreen = ({ route, navigation }) => {
 			<View className='flex-[5_5_0%]'>
 
 				<View className='mt-16 ml-14'>
-					{localLoading ? <View className='my-1 w-20 h-5 rounded-full bg-[#D8D8D8]'></View> : <Text className='text-black text-[20px] font-[Poppins-Medium]'>{data.groupName || groupInfo.groupName}</Text>}
-					<Text className='text-black text-sm font-[Poppins-Medium]'>Akshat owes you ₹775</Text>
+					{localLoading ? <View className='my-1 w-20 h-[25.5px] rounded-full bg-[#D8D8D8]'></View> : <Text className='text-black text-[20px] font-[Poppins-Medium]'>{data.groupName || groupInfo.groupName}</Text>}
+					{tabLoading ?
+						<View className='my-1 w-44 h-5 rounded-full bg-[#D8D8D8]'></View>
+						:
+						total > 0 ?
+							<Text className='text-[#03a37e] text-base font-[Poppins-Medium] mb-1'>You lend ₹{total} overall</Text>
+							:
+							<Text className='text-[#ed4f00] text-base font-[Poppins-Medium] mb-1'>You borrow ₹{-total} overall</Text>
+					}
+					{tabLoading ?
+						<View className='my-1 w-36 h-3 rounded-full bg-[#D8D8D8]'></View>
+						:
+						balance && balance[0].balance == 0 ?
+							null
+							:
+							balance && balance[0].balance > 0 ?
+								<Text className='text-black text-sm font-[Poppins-Medium]'>You lend {balance[0].name} ₹{balance[0].balance}</Text>
+								:
+								<Text className='text-black text-sm font-[Poppins-Medium]'>You borrow {balance[0].name} ₹{-balance[0].balance}</Text>
+					}
+					{tabLoading ?
+						<View className='my-1 w-36 h-3 rounded-full bg-[#D8D8D8]'></View>
+						:
+						balance && balance[1].balance == 0 ?
+							null
+							:
+							balance && balance[1].balance > 0 ?
+								<Text className='text-black text-sm font-[Poppins-Medium]'>You lend {balance[1].name} ₹{balance[1].balance}</Text>
+								:
+								<Text className='text-black text-sm font-[Poppins-Medium]'>You borrow {balance[1].name} ₹{-balance[1].balance}</Text>
+					}
 				</View>
 
 				<View className='mx-6 my-6 flex-row' >
@@ -78,8 +108,8 @@ const GroupMainScreen = ({ route, navigation }) => {
 					</TouchableNativeFeedback>
 				</View>
 
-				{tab.expenses && <Expenses data={groupInfo} user={user} />}
-				{tab.balances && <Balances />}
+				{localLoading ? <Loading /> : tab.expenses && groupInfo && <Expenses data={groupInfo} user={user} loading={localLoading} />}
+				{tab.balances && <Balances groupID={groupInfo.groupID} groupMembers={groupInfo.groupMembers} />}
 				{tab.total && <Total />}
 				{tab.payments && <Payments />}
 
@@ -90,6 +120,15 @@ const GroupMainScreen = ({ route, navigation }) => {
 			</View>
 
 		</View>
+	)
+}
+
+const Loading = () => {
+	return (
+		<>
+			<View className='my-2 mx-3 w-max h-16 rounded-md bg-[#D8D8D8]'></View>
+			<View className='my-2 mx-3 w-max h-16 rounded-md bg-[#D8D8D8]'></View>
+		</>
 	)
 }
 

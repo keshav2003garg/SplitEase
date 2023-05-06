@@ -13,6 +13,7 @@ import {
     UPDATE_USER_DETAILS__REQUEST, UPDATE_USER_DETAILS__SUCCESS, UPDATE_USER_DETAILS__FAIL,
     UPDATE_PAYMENT_DETAILS__REQUEST, UPDATE_PAYMENT_DETAILS__SUCCESS, UPDATE_PAYMENT_DETAILS__FAIL,
     ADD_EXPENSE__REQUEST, ADD_EXPENSE__SUCCESS, ADD_EXPENSE__FAIL,
+    FETCH_BALANCE__REQUEST, FETCH_BALANCE__SUCCESS, FETCH_BALANCE__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__MESSAGES, CLEAR__ERRORS,
@@ -226,6 +227,7 @@ const fetchGroups = (userID) => {
 
                 for (let i = 0; i < groupsJoined.length; i++) {
                     const group = await firestore().collection('groups').doc(groupsJoined[i]).get();
+                    const you = group.data().payments.filter((item) => item.userID === userID);
                     groups.push({
                         groupID: group.id,
                         groupName: group.data().groupName,
@@ -237,6 +239,8 @@ const fetchGroups = (userID) => {
                         payments: group.data().payments,
                         createdBy: group.data().createdBy,
                         createdAt: group.data().createdAt,
+                        borrow: you[0].borrow,
+                        lend: you[0].lend,
                     });
                 }
                 const data = {
@@ -479,7 +483,7 @@ const updateGroup = (groupID, groupName) => {
 
 
 
-const fetchGroup = (groupID) => {
+const fetchGroup = (groupID, userID) => {
     return (
         async (dispatch) => {
             try {
@@ -487,6 +491,7 @@ const fetchGroup = (groupID) => {
                     type: FETCH_GROUP__REQUEST
                 })
                 const fireBase = await firestore().collection('groups').doc(groupID).get();
+
                 const data = {
                     message: 'Group Fetched Successfully',
                     group: {
@@ -678,14 +683,15 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy }) => {
                 const groupMembers = fireBase.data().groupMembers;
                 const payments = fireBase.data().payments;
                 const groupMembersCount = groupMembers.length;
-                const expenseAmountPerHead = expenseAmount / groupMembersCount;
+                const expenseAmountPerHead = (expenseAmount / groupMembersCount).toFixed(0);
                 const paidBy = await firestore().collection('users').doc(expensePaidBy).get();
                 const expense = {
                     expenseName: expenseName,
-                    expenseAmount: expenseAmount,
+                    expenseAmount: expenseAmount.toFixed(0),
                     expensePaidBy: { userID: paidBy.id, name: paidBy.data().name.split(' ')[0] },
                     expenseAmountPerHead: expenseAmountPerHead,
                     expenseCreatedAt: new Date(),
+                    expenseFor: groupMembers.filter((member) => member !== expensePaidBy)
                 }
                 await firestore().collection('groups').doc(groupID).update({
                     expenses: firestore.FieldValue.arrayUnion(expense),
@@ -721,6 +727,7 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy }) => {
                     payload: data,
                 })
             } catch (error) {
+                console.log(error)
                 dispatch({
                     type: ADD_EXPENSE__FAIL,
                     payload: error.response
@@ -729,6 +736,64 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy }) => {
         }
     )
 }
+
+
+
+const fetchbalance = (userID, groupID) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: FETCH_BALANCE__REQUEST
+                })
+                const fireBase = await firestore().collection('groups').doc(groupID).get();
+                const expenses = fireBase.data().expenses;
+                const groupMembers = fireBase.data().groupMembers;
+
+                let balance = [];
+                for (let i = 0; i < groupMembers.length; i++) {
+                    if(groupMembers[i] === userID) continue;
+                    let total = 0;
+                    for(let j=0; j<expenses.length; j++){
+                        if(expenses[j].expensePaidBy.userID === groupMembers[i] && expenses[j].expenseFor.includes(userID)){
+                            total -= expenses[j].expenseAmountPerHead;
+                        }
+                        if(expenses[j].expensePaidBy.userID === userID && expenses[j].expenseFor.includes(groupMembers[i])){
+                            total += expenses[j].expenseAmountPerHead;
+                        }
+                    }
+                    const user = await firestore().collection('users').doc(groupMembers[i]).get();
+                    balance.push({
+                        userID: groupMembers[i],
+                        name: user.data().name,
+                        avatar: user.data().avatar,
+                        balance: total.toFixed(0),
+                    })
+                }
+                let total = 0;
+                for(let j=0; j<balance.length; j++){
+                    total += parseInt(balance[j].balance);
+                }
+                const data = {
+                    message: 'Balance Fetched Successfully',
+                    balance: balance,
+                    total: total.toFixed(0),
+                }
+                dispatch({
+                    type: FETCH_BALANCE__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                console.log(error)
+                dispatch({
+                    type: FETCH_BALANCE__FAIL,
+                    payload: error.response
+                })
+            }
+        }
+    )
+}
+
 
 
 
@@ -799,8 +864,8 @@ const disableBiometric = () => {
 
 export {
     googleRegister, googleLogout,
-    createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup, addExpense,
-    fetchUserDetails, updateUserDetails, updatePamentDetails,
+    createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup, addExpense, fetchbalance,
+    fetchUserDetails, updateUserDetails, updatePamentDetails, 
 
     clearErrors, clearMessages, bottomTabVisible, bottomTabHidden, enableBiometric, disableBiometric
 };

@@ -13,6 +13,7 @@ import {
     UPDATE_USER_DETAILS__REQUEST, UPDATE_USER_DETAILS__SUCCESS, UPDATE_USER_DETAILS__FAIL,
     UPDATE_PAYMENT_DETAILS__REQUEST, UPDATE_PAYMENT_DETAILS__SUCCESS, UPDATE_PAYMENT_DETAILS__FAIL,
     ADD_EXPENSE__REQUEST, ADD_EXPENSE__SUCCESS, ADD_EXPENSE__FAIL,
+    FETCH_BALANCE__REQUEST, FETCH_BALANCE__SUCCESS, FETCH_BALANCE__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__ERRORS, CLEAR__MESSAGES,
@@ -21,7 +22,7 @@ import {
 
 
 
-const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false, groups: [] };
+const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false, groups: [], balance:[] };
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case GOOGLE_REGISTER__REQUEST:
@@ -53,6 +54,11 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 spinLoading: true,
+            }
+        case FETCH_BALANCE__REQUEST:
+            return {
+                ...state,
+                tabLoading: true,
             }
 
 
@@ -161,6 +167,13 @@ const userReducer = (state = initialState, action) => {
                 loading: false,
                 message: action.payload.message,
             }
+        case FETCH_BALANCE__SUCCESS:
+            return {
+                ...state,
+                tabLoading: false,
+                balance: action.payload.balance,
+                total: action.payload.total
+            }
 
 
 
@@ -198,6 +211,12 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 spinLoading: false,
+                error: action.payload
+            }
+        case FETCH_BALANCE__FAIL:
+            return {
+                ...state,
+                tabLoading: false,
                 error: action.payload
             }
 
