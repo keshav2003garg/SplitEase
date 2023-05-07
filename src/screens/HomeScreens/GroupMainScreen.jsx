@@ -17,7 +17,7 @@ import Payments from '../../components/GroupScreenTabs/Payments';
 const GroupMainScreen = ({ route, navigation }) => {
 	const { data } = route.params;
 	const dispatch = useDispatch();
-	const { groupInfo, localLoading, user, balance, tabLoading, total } = useSelector(state => state.user);
+	const { groupInfo, localLoading, user, balance, tabLoading, total, totalGroupSpent, you_paid, your_share } = useSelector(state => state.user);
 	const [tab, setTab] = useState({ expenses: true, balances: false, total: false, payments: false });
 	const [isModalVisible, setModalVisible] = useState(false);
 	const bottomSheetModalRef = useRef(null);
@@ -56,32 +56,13 @@ const GroupMainScreen = ({ route, navigation }) => {
 					{tabLoading ?
 						<View className='my-1 w-44 h-5 rounded-full bg-[#D8D8D8]'></View>
 						:
-						total > 0 ?
-							<Text className='text-[#03a37e] text-base font-[Poppins-Medium] mb-1'>You lend ₹{total} overall</Text>
+						total === 0 ?
+							<Text className='text-[#5A5A5A] text-base font-[Poppins-Medium] mb-1'>You are all settled up</Text>
 							:
-							<Text className='text-[#ed4f00] text-base font-[Poppins-Medium] mb-1'>You borrow ₹{-total} overall</Text>
-					}
-					{tabLoading ?
-						<View className='my-1 w-36 h-3 rounded-full bg-[#D8D8D8]'></View>
-						:
-						balance && balance[0].balance == 0 ?
-							null
-							:
-							balance && balance[0].balance > 0 ?
-								<Text className='text-black text-sm font-[Poppins-Medium]'>You lend {balance[0].name} ₹{balance[0].balance}</Text>
+							total > 0 ?
+								<Text className='text-[#03a37e] text-base font-[Poppins-Medium] mb-1'>You lend ₹{total} overall</Text>
 								:
-								<Text className='text-black text-sm font-[Poppins-Medium]'>You borrow {balance[0].name} ₹{-balance[0].balance}</Text>
-					}
-					{tabLoading ?
-						<View className='my-1 w-36 h-3 rounded-full bg-[#D8D8D8]'></View>
-						:
-						balance && balance[1].balance == 0 ?
-							null
-							:
-							balance && balance[1].balance > 0 ?
-								<Text className='text-black text-sm font-[Poppins-Medium]'>You lend {balance[1].name} ₹{balance[1].balance}</Text>
-								:
-								<Text className='text-black text-sm font-[Poppins-Medium]'>You borrow {balance[1].name} ₹{-balance[1].balance}</Text>
+								<Text className='text-[#ed4f00] text-base font-[Poppins-Medium] mb-1'>You borrow ₹{-total} overall</Text>
 					}
 				</View>
 
@@ -108,9 +89,9 @@ const GroupMainScreen = ({ route, navigation }) => {
 					</TouchableNativeFeedback>
 				</View>
 
-				{localLoading ? <Loading /> : tab.expenses && groupInfo && <Expenses data={groupInfo} user={user} loading={localLoading} />}
-				{tab.balances && <Balances groupID={groupInfo.groupID} groupMembers={groupInfo.groupMembers} />}
-				{tab.total && <Total />}
+				{tab.expenses && <Expenses data={groupInfo} user={user} loading={localLoading} />}
+				{tab.balances && <Balances balance={balance} user={user} />}
+				{tab.total && <Total totalGroupSpent={totalGroupSpent} you_paid={you_paid} your_share={your_share} />}
 				{tab.payments && <Payments />}
 
 				<BottomSheetModal name='settings' ref={bottomSheetModalRef} index={0} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: '#fff', borderRadius: 40, }} onChange={() => { setModalVisible(true) }} onDismiss={() => { setModalVisible(false) }} >

@@ -114,7 +114,7 @@ const googleRegister = () => {
             } catch (error) {
                 dispatch({
                     type: GOOGLE_REGISTER__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -141,7 +141,7 @@ const googleLogout = () => {
             } catch (error) {
                 dispatch({
                     type: GOOGLE_LOGOUT__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -205,7 +205,7 @@ const createGroup = ({ name, type, image, members }) => {
             } catch (error) {
                 dispatch({
                     type: CREATE_GROUP__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -254,7 +254,7 @@ const fetchGroups = (userID) => {
             } catch (error) {
                 dispatch({
                     type: FETCH_GROUPS__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -332,7 +332,7 @@ const joinGroup = (userID, joinCode) => {
             } catch (error) {
                 dispatch({
                     type: JOIN_GROUP__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -371,7 +371,7 @@ const fetchMembers = (groupID) => {
             } catch (error) {
                 dispatch({
                     type: FETCH_GROUP_MEMBERS__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -404,7 +404,7 @@ const leaveGroup = (userID, groupID) => {
             } catch (error) {
                 dispatch({
                     type: LEAVE_GROUP__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -438,7 +438,7 @@ const deleteGroup = (userID, groupID) => {
             } catch (error) {
                 dispatch({
                     type: DELETE_GROUP__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -474,7 +474,7 @@ const updateGroup = (groupID, groupName) => {
             } catch (error) {
                 dispatch({
                     type: UPDATE_GROUP__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -514,7 +514,7 @@ const fetchGroup = (groupID, userID) => {
             } catch (error) {
                 dispatch({
                     type: FETCH_GROUP__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -554,7 +554,7 @@ const fetchUserDetails = (userID) => {
             } catch (error) {
                 dispatch({
                     type: FETCH_USER_DETAILS__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -604,7 +604,7 @@ const updateUserDetails = (userID, { name, email, phone }) => {
             } catch (error) {
                 dispatch({
                     type: UPDATE_USER_DETAILS__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -649,7 +649,7 @@ const updatePamentDetails = (userID, { upi, paytm }) => {
             } catch (error) {
                 dispatch({
                     type: UPDATE_PAYMENT_DETAILS__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -683,11 +683,11 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy }) => {
                 const groupMembers = fireBase.data().groupMembers;
                 const payments = fireBase.data().payments;
                 const groupMembersCount = groupMembers.length;
-                const expenseAmountPerHead = (expenseAmount / groupMembersCount).toFixed(0);
+                const expenseAmountPerHead = Math.round(expenseAmount / groupMembersCount);
                 const paidBy = await firestore().collection('users').doc(expensePaidBy).get();
                 const expense = {
                     expenseName: expenseName,
-                    expenseAmount: expenseAmount.toFixed(0),
+                    expenseAmount: expenseAmount,
                     expensePaidBy: { userID: paidBy.id, name: paidBy.data().name.split(' ')[0] },
                     expenseAmountPerHead: expenseAmountPerHead,
                     expenseCreatedAt: new Date(),
@@ -727,10 +727,9 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy }) => {
                     payload: data,
                 })
             } catch (error) {
-                console.log(error)
                 dispatch({
                     type: ADD_EXPENSE__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }
@@ -767,17 +766,30 @@ const fetchbalance = (userID, groupID) => {
                         userID: groupMembers[i],
                         name: user.data().name,
                         avatar: user.data().avatar,
-                        balance: total.toFixed(0),
+                        balance: Math.round(total),
                     })
                 }
                 let total = 0;
                 for(let j=0; j<balance.length; j++){
                     total += parseInt(balance[j].balance);
                 }
+                let totalGroupSpent = 0, you_paid = 0, your_share = 0;
+                for(let j=0; j<expenses.length; j++){
+                    totalGroupSpent += parseInt(expenses[j].expenseAmount);
+                    if(expenses[j].expensePaidBy.userID === userID){
+                        you_paid += parseInt(expenses[j].expenseAmount);
+                    }
+                    if(expenses[j].expenseFor.includes(userID) || expenses[j].expensePaidBy.userID === userID){
+                        your_share += parseInt(expenses[j].expenseAmountPerHead);
+                    }
+                }
                 const data = {
                     message: 'Balance Fetched Successfully',
                     balance: balance,
-                    total: total.toFixed(0),
+                    total: Math.round(total),
+                    totalGroupSpent: Math.round(totalGroupSpent),
+                    you_paid: Math.round(you_paid),
+                    your_share: Math.round(your_share),
                 }
                 dispatch({
                     type: FETCH_BALANCE__SUCCESS,
@@ -787,7 +799,7 @@ const fetchbalance = (userID, groupID) => {
                 console.log(error)
                 dispatch({
                     type: FETCH_BALANCE__FAIL,
-                    payload: error.response
+                    payload: error.toString()
                 })
             }
         }

@@ -16,6 +16,7 @@ export default function AddExpense({ navigation }) {
 
 	const handleExpense = () => {
 		navigation.goBack();
+		data.expenseAmount = parseInt(data.expenseAmount);
 		dispatch(addExpense(groups[0].groupID, data));
 	}
 

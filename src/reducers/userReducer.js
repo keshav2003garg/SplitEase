@@ -22,7 +22,7 @@ import {
 
 
 
-const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false, groups: [], balance:[] };
+const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false, groups: [], balance: [] };
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case GOOGLE_REGISTER__REQUEST:
@@ -145,21 +145,21 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 localLoading: false,
-                user: {...state.user, ...action.payload.user}
+                user: { ...state.user, ...action.payload.user }
             }
         case UPDATE_USER_DETAILS__SUCCESS:
             return {
                 ...state,
                 spinLoading: false,
                 message: action.payload.message,
-                user: {...state.user, ...action.payload.user}
+                user: { ...state.user, ...action.payload.user }
             }
         case UPDATE_PAYMENT_DETAILS__SUCCESS:
             return {
                 ...state,
                 spinLoading: false,
                 message: action.payload.message,
-                user: {...state.user, ...action.payload.user}
+                user: { ...state.user, ...action.payload.user }
             }
         case ADD_EXPENSE__SUCCESS:
             return {
@@ -172,7 +172,10 @@ const userReducer = (state = initialState, action) => {
                 ...state,
                 tabLoading: false,
                 balance: action.payload.balance,
-                total: action.payload.total
+                total: action.payload.total,
+                totalGroupSpent: action.payload.totalGroupSpent,
+                you_paid: action.payload.you_paid,
+                your_share: action.payload.your_share,
             }
 
 

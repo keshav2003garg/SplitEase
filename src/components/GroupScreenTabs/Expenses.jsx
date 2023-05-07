@@ -3,15 +3,14 @@ import { View, Text, ScrollView, FlatList } from 'react-native';
 import MI from 'react-native-vector-icons/MaterialIcons';
 
 export default function Expenses({ data, user, loading }) {
-    const { expenses } = data;
     return (
-        <View>
+        <View className='flex-1'>
 
             {loading ?
                 <Loading />
                 :
-                expenses.length > 0 ?
-                    <FlatList data={expenses} renderItem={({ item, index }) => <ExpenseList key={index} item={item} user={user} />} />
+                data?.expenses.length > 0 ?
+                    <FlatList data={data?.expenses} renderItem={({ item, index }) => <ExpenseList key={index} item={item} user={user} />} />
                     :
                     <View className='mt-5 flex-1 justify-center items-center'><MI name='error-outline' size={50} color={'black'} /><Text className='text-[#5A5A5A] font-[Poppins-Medium]'>No Expenses</Text></View>
             }
@@ -38,7 +37,7 @@ const ExpenseList = ({ item, user }) => {
             </View>
             <View className='items-end'>
                 <Text className='text-[13px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>you {item.expensePaidBy.userID === user.userID ? 'lend' : 'borrowed'}</Text>
-                <Text className='text-[17px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>₹{item.expensePaidBy.userID === user.userID ? (item.expenseAmount - item.expenseAmountPerHead).toFixed(0) : item.expenseAmountPerHead}</Text>
+                <Text className='text-[17px] text-[#5A5A5A] font-[Poppins-Medium] ml-3'>₹{item.expensePaidBy.userID === user.userID ? (item.expenseAmount - item.expenseAmountPerHead) : item.expenseAmountPerHead}</Text>
             </View>
         </View>
     )
