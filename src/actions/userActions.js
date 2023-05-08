@@ -658,7 +658,7 @@ const updatePamentDetails = (userID, { upi, paytm }) => {
 
 
 
-const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy }) => {
+const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy, expenseCategory }) => {
     return (
         async (dispatch) => {
             try {
@@ -685,13 +685,16 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy }) => {
                 const groupMembersCount = groupMembers.length;
                 const expenseAmountPerHead = Math.round(expenseAmount / groupMembersCount);
                 const paidBy = await firestore().collection('users').doc(expensePaidBy).get();
+                const ref = storage().ref(`/icons/categories/${expenseCategory.toLowerCase()}.png`);
+                const url = await ref.getDownloadURL();
                 const expense = {
                     expenseName: expenseName,
                     expenseAmount: expenseAmount,
                     expensePaidBy: { userID: paidBy.id, name: paidBy.data().name.split(' ')[0] },
                     expenseAmountPerHead: expenseAmountPerHead,
                     expenseCreatedAt: new Date(),
-                    expenseFor: groupMembers.filter((member) => member !== expensePaidBy)
+                    expenseFor: groupMembers.filter((member) => member !== expensePaidBy),
+                    expenseCategory: url,
                 }
                 await firestore().collection('groups').doc(groupID).update({
                     expenses: firestore.FieldValue.arrayUnion(expense),
@@ -751,13 +754,13 @@ const fetchbalance = (userID, groupID) => {
 
                 let balance = [];
                 for (let i = 0; i < groupMembers.length; i++) {
-                    if(groupMembers[i] === userID) continue;
+                    if (groupMembers[i] === userID) continue;
                     let total = 0;
-                    for(let j=0; j<expenses.length; j++){
-                        if(expenses[j].expensePaidBy.userID === groupMembers[i] && expenses[j].expenseFor.includes(userID)){
+                    for (let j = 0; j < expenses.length; j++) {
+                        if (expenses[j].expensePaidBy.userID === groupMembers[i] && expenses[j].expenseFor.includes(userID)) {
                             total -= expenses[j].expenseAmountPerHead;
                         }
-                        if(expenses[j].expensePaidBy.userID === userID && expenses[j].expenseFor.includes(groupMembers[i])){
+                        if (expenses[j].expensePaidBy.userID === userID && expenses[j].expenseFor.includes(groupMembers[i])) {
                             total += expenses[j].expenseAmountPerHead;
                         }
                     }
@@ -770,16 +773,16 @@ const fetchbalance = (userID, groupID) => {
                     })
                 }
                 let total = 0;
-                for(let j=0; j<balance.length; j++){
+                for (let j = 0; j < balance.length; j++) {
                     total += parseInt(balance[j].balance);
                 }
                 let totalGroupSpent = 0, you_paid = 0, your_share = 0;
-                for(let j=0; j<expenses.length; j++){
+                for (let j = 0; j < expenses.length; j++) {
                     totalGroupSpent += parseInt(expenses[j].expenseAmount);
-                    if(expenses[j].expensePaidBy.userID === userID){
+                    if (expenses[j].expensePaidBy.userID === userID) {
                         you_paid += parseInt(expenses[j].expenseAmount);
                     }
-                    if(expenses[j].expenseFor.includes(userID) || expenses[j].expensePaidBy.userID === userID){
+                    if (expenses[j].expenseFor.includes(userID) || expenses[j].expensePaidBy.userID === userID) {
                         your_share += parseInt(expenses[j].expenseAmountPerHead);
                     }
                 }
@@ -877,7 +880,7 @@ const disableBiometric = () => {
 export {
     googleRegister, googleLogout,
     createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup, addExpense, fetchbalance,
-    fetchUserDetails, updateUserDetails, updatePamentDetails, 
+    fetchUserDetails, updateUserDetails, updatePamentDetails,
 
     clearErrors, clearMessages, bottomTabVisible, bottomTabHidden, enableBiometric, disableBiometric
 };

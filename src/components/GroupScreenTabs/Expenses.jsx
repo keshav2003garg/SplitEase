@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, FlatList } from 'react-native';
+import { View, Text, ScrollView, FlatList, Image } from 'react-native';
 import MI from 'react-native-vector-icons/MaterialIcons';
 
 export default function Expenses({ data, user, loading }) {
@@ -29,7 +29,7 @@ const ExpenseList = ({ item, user }) => {
                     <Text className='text-[10px] text-[#5A5A5A] font-[Poppins-Regular]'>{date.toLocaleString('default', { month: 'long' })}</Text>
                     <Text className='text-[18px] text-[#5A5A5A] font-[Poppins-Medium] leading-5'>{date.getDate()}</Text>
                 </View>
-                <View className='mx-3 p-2 bg-slate-300 rounded-lg'><MI name='music-note' size={30} color={'black'} /></View>
+                <View className='mx-3 p-2 bg-slate-300 rounded-lg'><Image source={{ uri: item.expenseCategory }} className='w-10 h-10' /></View>
                 <View>
                     <Text className='text-base text-black font-[Poppins-Medium]'>{item.expenseName}</Text>
                     <Text className='text-sm text-[#5A5A5A] font-[Poppins-Regular]'>{item.expensePaidBy.name} Paid ₹{item.expenseAmount}</Text>
@@ -46,8 +46,10 @@ const ExpenseList = ({ item, user }) => {
 const Loading = () => {
     return (
         <>
-            <View className='my-2 mx-3 w-max h-16 rounded-md bg-[#D8D8D8]'></View>
-            <View className='my-2 mx-3 w-max h-16 rounded-md bg-[#D8D8D8]'></View>
+            <View className='my-2 mx-3 w-max h-16 rounded-md bg-slate-50'></View>
+            <View className='my-2 mx-3 w-max h-16 rounded-md bg-slate-50'></View>
+            <View className='my-2 mx-3 w-max h-16 rounded-md bg-slate-50'></View>
+            <View className='my-2 mx-3 w-max h-16 rounded-md bg-slate-50'></View>
         </>
     )
 }

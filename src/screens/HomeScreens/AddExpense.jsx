@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableNativeFeedback } from "react-native";
+import { View, Text, TextInput, TouchableNativeFeedback, Image } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { Modal, Portal, Provider } from 'react-native-paper';
 import MI from 'react-native-vector-icons/MaterialIcons';
 import Io from 'react-native-vector-icons/Ionicons';
 import FA5 from 'react-native-vector-icons/FontAwesome5';
 import FA from 'react-native-vector-icons/FontAwesome';
 
 import { addExpense } from "../../actions/userActions";
+import Categories from "../../components/Modals/Categories";
 
 export default function AddExpense({ navigation }) {
 	const dispatch = useDispatch();
 	const [focused, setFocused] = useState({ _1: false, _2: false });
 	const { user, groups } = useSelector(state => state.user);
-	const [data, setData] = useState({ expenseName: '', expenseAmount: '', expensePaidBy: user.userID });
+	const [category, setCategory] = useState({ name: 'Others', icon: require('../../../assets/icons/categories/others.png') });
+	const [data, setData] = useState({ expenseName: '', expenseAmount: '', expensePaidBy: user.userID, expenseCategory: category.name });
+	const [visible, setVisible] = useState(false);
 
 	const handleExpense = () => {
 		navigation.goBack();
@@ -33,11 +37,11 @@ export default function AddExpense({ navigation }) {
 
 			<View className='items-center mx-14 mt-8'>
 				<View className='flex-row items-end mb-5'>
-					<View className={`mr-3 p-2 px-[9px] bg-[${focused._1 ? '#d6ecdc' : '#94A3B8'}] border-slate-400 border-[0.55px] rounded-md border-b-4 border-b-slate-400`}><Io name="ios-fast-food-outline" color='#5A5A5A' size={33} /></View>
+					<TouchableNativeFeedback onPress={() => { setVisible(true) }}><View className={`mr-3 p-2 px-[9px] border-slate-400 border-[0.55px] rounded-md border-b-4 border-b-slate-400`}><Image className='w-8 h-8' source={category.icon} /></View></TouchableNativeFeedback>
 					<TextInput value={data.expenseName} className={`flex-1 p-0 border-[${focused._1 ? '#03a37e' : '#5A5A5A'}] border-b-2 text-black text-lg font-[Poppins-Regular]`} placeholderTextColor={'rgb(100 116 139)'} placeholder='Enter a description' inputMode="text" onFocus={() => { setFocused({ ...focused, _1: true }) }} onBlur={() => { setFocused({ ...focused, _1: false }) }} onChangeText={(text) => { setData({ ...data, expenseName: text }) }} />
 				</View>
 				<View className='flex-row items-end mb-5'>
-					<View className={`mr-3 p-2 px-4 pb-1 bg-[${focused._2 ? '#d6ecdc' : '#94A3B8'}] border-slate-400 border-[0.55px] rounded-md border-b-4 border-b-slate-400`}><FA name="rupee" color='#5A5A5A' size={35} /></View>
+					<View className={`mr-3 p-2 px-4 pb-1 border-slate-400 border-[0.55px] rounded-md border-b-4 border-b-slate-400`}><FA name="rupee" color='#5A5A5A' size={35} /></View>
 					<TextInput value={data.expenseAmount} className={`flex-1 p-0 border-[${focused._2 ? '#03a37e' : '#5A5A5A'}] border-b-2 text-black text-3xl h-12 font-[Poppins-Medium]`} placeholderTextColor={'rgb(100 116 139)'} placeholder='0.00' inputMode='decimal' onFocus={() => { setFocused({ ...focused, _2: true }) }} onBlur={() => { setFocused({ ...focused, _2: false }) }} onChangeText={(text) => { setData({ ...data, expenseAmount: text }) }} />
 				</View>
 				<View className='flex-row items-center'>
@@ -47,6 +51,12 @@ export default function AddExpense({ navigation }) {
 					<Text className='text-black text-[15px] font-[Poppins-Medium] mx-2 p-2 border-slate-300 border-[0.55px] rounded-md border-b-4 border-b-slate-300'>equally</Text>
 				</View>
 			</View>
+
+
+			<Modal visible={visible} onDismiss={() => { setVisible(false) }} contentContainerStyle={{ backgroundColor: 'white', borderRadius: 20, overflow: 'hidden' }} className='mt-28 mb-20 mx-14' >
+				<Categories setCategory={setCategory} setVisible={setVisible} setData={setData} data={data} />
+			</Modal>
+
 
 		</View>
 	)
