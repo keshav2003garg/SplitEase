@@ -1,8 +1,17 @@
-import React from 'react';
-import { View, Text, ScrollView, FlatList, Image } from 'react-native';
+import React, { useState, useCallback, memo } from 'react';
+import { View, Text, FlatList, Image, RefreshControl } from 'react-native';
 import MI from 'react-native-vector-icons/MaterialIcons';
 
-export default function Expenses({ data, user, loading }) {
+function Expenses({ data, user, loading }) {
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 1000);
+    }, []);
+    let expense = JSON.parse(JSON.stringify(data?.expenses));
+    expense?.reverse()
     return (
         <View className='flex-1'>
 
@@ -10,7 +19,7 @@ export default function Expenses({ data, user, loading }) {
                 <Loading />
                 :
                 data?.expenses.length > 0 ?
-                    <FlatList data={data?.expenses} renderItem={({ item, index }) => <ExpenseList key={index} item={item} user={user} />} />
+                    <FlatList data={expense} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} renderItem={({ item, index }) => <ExpenseList key={index} item={item} user={user} />} />
                     :
                     <View className='mt-5 flex-1 justify-center items-center'><MI name='error-outline' size={50} color={'black'} /><Text className='text-[#5A5A5A] font-[Poppins-Medium]'>No Expenses</Text></View>
             }
@@ -18,6 +27,8 @@ export default function Expenses({ data, user, loading }) {
         </View>
     )
 }
+
+export default memo(Expenses);
 
 
 const ExpenseList = ({ item, user }) => {

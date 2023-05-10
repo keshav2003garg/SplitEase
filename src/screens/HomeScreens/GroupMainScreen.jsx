@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { trigger } from "react-native-haptic-feedback";
 import MI from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/FontAwesome5';
 import { SharedElement } from 'react-navigation-shared-element';
 
 import { fetchGroup, fetchbalance } from '../../actions/userActions';
@@ -29,8 +30,7 @@ const GroupMainScreen = ({ route, navigation }) => {
 	}
 	BackHandler.addEventListener('hardwareBackPress', () => {
 		if (isModalVisible) {
-			bottomSheetModalRef.current?.close();
-			setModalVisible(false);
+			bottomSheetModalRef.current?.forceClose();
 		}
 	});
 	useEffect(() => {
@@ -94,6 +94,15 @@ const GroupMainScreen = ({ route, navigation }) => {
 				{tab.total && <Total totalGroupSpent={totalGroupSpent} you_paid={you_paid} your_share={your_share} />}
 				{tab.payments && <Payments />}
 
+				<View className='absolute bottom-4 right-5' onPress={() => { navigation.navigate('AddExpense') }} >
+					<TouchableNativeFeedback onPress={() => { navigation.navigate('AddExpense', { alreadySelected: true, group: groupInfo }) }}>
+						<View animation={'bounceInUp'} className='flex-row items-center rounded-[50px] bg-[#03a37e] p-[10px] px-[15px]'>
+							<View className='m-[5px]'><Feather name='money-bill-wave' color='white' size={20} /></View>
+							<Text className='m-[5px] text-white text-[15px] font-[Poppins-Medium]'>Add Expense</Text>
+						</View>
+					</TouchableNativeFeedback>
+				</View>
+
 				<BottomSheetModal name='settings' ref={bottomSheetModalRef} index={0} snapPoints={snapPoints} backgroundStyle={{ backgroundColor: '#fff', borderRadius: 40, }} onChange={() => { setModalVisible(true) }} onDismiss={() => { setModalVisible(false) }} >
 					<GroupSettings data={data} sheet={bottomSheetModalRef.current} navigation={navigation} />
 				</BottomSheetModal>
@@ -101,15 +110,6 @@ const GroupMainScreen = ({ route, navigation }) => {
 			</View>
 
 		</View>
-	)
-}
-
-const Loading = () => {
-	return (
-		<>
-			<View className='my-2 mx-3 w-max h-16 rounded-md bg-[#D8D8D8]'></View>
-			<View className='my-2 mx-3 w-max h-16 rounded-md bg-[#D8D8D8]'></View>
-		</>
 	)
 }
 

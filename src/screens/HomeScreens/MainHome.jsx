@@ -3,14 +3,14 @@ import { View, Text, StatusBar, Image, ScrollView, TouchableNativeFeedback, Refr
 import { useDispatch, useSelector } from "react-redux";
 import Icon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/FontAwesome5';
-import MI from 'react-native-vector-icons/MaterialCommunityIcons';
 import MAI from 'react-native-vector-icons/MaterialIcons';
 import * as Animatable from "react-native-animatable";
 
+import HomeNavbar from "../../components/HomeNavbar";
 import GroupList from "../../components/GroupList";
 import PulseLoading from "../../components/PulseLoading";
 
-import { fetchGroups } from "../../actions/userActions";
+import { fetchGroups, fetchUserDetails } from "../../actions/userActions";
 
 
 export default function MainHome({ navigation }) {
@@ -23,6 +23,7 @@ export default function MainHome({ navigation }) {
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
 		dispatch(fetchGroups(user.userID));
+		dispatch(fetchUserDetails(user.userID));
 		if (!pulseLoading) setRefreshing(false);
 	}, []);
 	return (
@@ -30,12 +31,7 @@ export default function MainHome({ navigation }) {
 
 			<StatusBar barStyle='dark-content' />
 
-			<View className='flex-row justify-end mt-[50px] pb-[12px] border-[#D8D8D8] border-b-[0.55px]'>
-				<View className='flex flex-row justify-between mr-[12px]'>
-					<Animatable.View animation={'bounceIn'} className='mx-[10px] mt-[3px]'><Icon name='search-sharp' color='#5A5A5A' size={24} /></Animatable.View>
-					<Animatable.View animation={'bounceIn'} className='mx-[10px]'><MI onPress={() => { navigation.navigate('CreateGroup') }} name='account-multiple-plus-outline' color='#5A5A5A' size={27} /></Animatable.View>
-				</View>
-			</View>
+			<HomeNavbar />
 
 			{pulseLoading ?
 				<PulseLoading />
@@ -44,8 +40,18 @@ export default function MainHome({ navigation }) {
 
 					<View className='flex-row justify-between items-center mx-[17px] mt-[20px] mb-[7px]'>
 						<View>
-							<Text className='text-black text-[16px] font-[Poppins-Medium]'>Overall, you borrow <Text className='text-[#ed4f00] text-[16px] font-[Poppins-SemiBold]'>₹ {user.you_borrow.toFixed(0)}</Text></Text>
-							<Text className='text-black text-[16px] font-[Poppins-Medium]'>and you are lend <Text className='text-[#03a37e] text-[16px] font-[Poppins-SemiBold]'>₹ {user.you_lend.toFixed(0)}</Text></Text>
+							<Text className='text-black text-[16px] font-[Poppins-Medium]'>
+								{user.you_borrow == 0 && user.you_lend == 0 ?
+									<Text>You are settled up</Text>
+									:
+									<>
+										Overall,
+										{user.you_borrow != 0 && <Text> you borrow <Text className='text-[#ed4f00]'>₹ {user.you_borrow.toFixed(0)}</Text></Text>}
+										{user.you_borrow != 0 && user.you_lend != 0 && <Text>{`\nand `}</Text>}
+										{user.you_lend != 0 && <Text>{user.you_lend != 0 && user.you_borrow == 0 ? " " : ""}you lend <Text className='text-[#03a37e]'>₹ {user.you_lend.toFixed(0)}</Text></Text>}
+									</>
+								}
+							</Text>
 						</View>
 						<Icon name='md-options-sharp' color='#5A5A5A' size={32} />
 					</View>

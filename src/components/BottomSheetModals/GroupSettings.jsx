@@ -20,8 +20,7 @@ export default function GroupSettings({ data, sheet, navigation }) {
 	const onShare = async () => {
 		try {
 			await Share.share({
-				message:
-					`Enter this code to join my SplitEase group under Accounts Section.\nGroup Code: ${data.joinCode}`,
+				message: `Enter this code to join my SplitEase group under Accounts Section.\nGroup Code: ${data.joinCode}`,
 			});
 		} catch (error) {
 			Alert.alert(error.message);

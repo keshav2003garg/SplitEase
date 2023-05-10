@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { View, Text, Image, FlatList } from 'react-native'
 import ANT from 'react-native-vector-icons/AntDesign';
 
@@ -10,10 +10,10 @@ export default function Balances({ balance, user }) {
 
 const BalanceList = ({ item, user }) => {
 	return (
-		item.balance !== 0 &&
+		item?.balance !== 0 &&
 		<View className='flex-row justify-between items-center bg-slate-50 my-2 mx-3 p-2 rounded-md'>
 
-			{item.balance > 0 ?
+			{item?.balance > 0 ?
 				<View className='items-center'>
 					<View className='rounded-full overflow-hidden'><Image className='w-12 h-12' source={{ uri: item.avatar }} /></View>
 					<Text className='text-black text-[13px] font-[Poppins-Medium]'>{item.name}</Text>
@@ -34,7 +34,7 @@ const BalanceList = ({ item, user }) => {
 
 			<View><ANT name='arrowright' size={25} color={'#000'} /></View>
 
-			{item.balance > 0 ?
+			{item?.balance > 0 ?
 				<View className='items-center'>
 					<View className='rounded-full overflow-hidden'><Image className='w-12 h-12' source={{ uri: user.avatar }} /></View>
 					<Text className='text-black text-[13px] font-[Poppins-Medium]'>{user.name}</Text>

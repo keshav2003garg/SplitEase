@@ -49,7 +49,7 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
                 <TouchableNativeFeedback onPress={() => { handleSheet('profile') }}><MI name='edit' size={27} color={'black'} /></TouchableNativeFeedback>
             </View>
 
-            <View className={`my-3 border-b-2`} style={{ borderColor: `${isModalVisible.visible ? '#AAAAAA' : '#D8D8D8'}` }}></View>
+            <View className={`my-3 border-b-2 border-[${isModalVisible.visible ? '#AAAAAA' : '#D8D8D8'}]`}></View>
 
             <TouchableNativeFeedback onPress={() => { handleSheet('join') }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
                 <View className='px-5 py-3 flex-row items-center' >
@@ -100,7 +100,7 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
                 </View>
             </TouchableNativeFeedback>
 
-            <View className={`my-3 border-b-2`} style={{ borderColor: `${isModalVisible.visible ? '#AAAAAA' : '#D8D8D8'}` }}></View>
+            <View className={`my-3 border-b-2 border-[${isModalVisible.visible ? '#AAAAAA' : '#D8D8D8'}]`}></View>
 
             <TouchableNativeFeedback onPress={() => { dispatch(googleLogout()) }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
                 <View className='px-5 py-3 flex-row items-center'>

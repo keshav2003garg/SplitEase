@@ -681,6 +681,13 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy, expens
                 }
                 const fireBase = await firestore().collection('groups').doc(groupID).get();
                 const groupMembers = fireBase.data().groupMembers;
+                if(groupMembers.length === 1){
+                    dispatch({
+                        type: ADD_EXPENSE__FAIL,
+                        payload: 'There should be atleast 2 members in the group',
+                    })  
+                    return;
+                }
                 const payments = fireBase.data().payments;
                 const groupMembersCount = groupMembers.length;
                 const expenseAmountPerHead = Math.round(expenseAmount / groupMembersCount);

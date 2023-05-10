@@ -2,6 +2,7 @@ import React, { useRef, useState, useMemo } from 'react';
 import { View, Text, BackHandler } from 'react-native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { trigger } from "react-native-haptic-feedback";
+import Animated, { useSharedValue, useAnimatedStyle, interpolateColor, withTiming } from 'react-native-reanimated';
 
 import AccountPage from '../../components/AccountPage';
 import Profile from '../../components/BottomSheetModals/Profile';
@@ -10,6 +11,7 @@ import PaymentDetails from '../../components/BottomSheetModals/PaymentDetails';
 import EmailSettings from '../../components/BottomSheetModals/EmailSettings';
 
 export default function Account({ navigation }) {
+	const opacity = useSharedValue(0);
 	const [isModalVisible, setModalVisible] = useState({ visible: false, components: { profile: false, join: false, payment: false, emailSetting: false, lock: false } });
 	const bottomSheetRef = useRef(["profile", "join", "payment", "emailSetting"]);
 	const snapPoints = useMemo(() => ['26%', "77%", "90"], []);
@@ -18,14 +20,31 @@ export default function Account({ navigation }) {
 		bottomSheetRef.current[name]?.present();
 		trigger("impactMedium");
 	});
+	React.useEffect(() => {
+		if (isModalVisible.visible) opacity.value = withTiming(1);
+		else opacity.value = withTiming(0);
+	}, [isModalVisible.visible]);
+	const opacityStyle = useAnimatedStyle(() => {
+		return {
+			backgroundColor: interpolateColor(opacity.value, [0, 1], ["#FFFFFF", "#BEBEBE"])
+		};
+	});
 	BackHandler.addEventListener('hardwareBackPress', () => {
-		if (isModalVisible.components.profile) bottomSheetRef.current['profile'].forceClose();
-		if (isModalVisible.components.join) bottomSheetRef.current['join'].forceClose();
-		if (isModalVisible.components.payment) bottomSheetRef.current['payment'].forceClose();
-		if (isModalVisible.components.emailSetting) bottomSheetRef.current['emailSetting'].forceClose();
+		if (isModalVisible.components.profile) {
+			bottomSheetRef.current['profile']?.forceClose();
+		}
+		if (isModalVisible.components.join) {
+			bottomSheetRef.current['join']?.forceClose();
+		}
+		if (isModalVisible.components.payment) {
+			bottomSheetRef.current['payment']?.forceClose();
+		}
+		if (isModalVisible.components.emailSetting) {
+			bottomSheetRef.current['emailSetting']?.forceClose();
+		}
 	});
 	return (
-		<View pointerEvents={isModalVisible.visible ? "none" : "auto"} className={`flex-1 ${isModalVisible.visible ? 'bg-[#BEBEBE]' : 'bg-[#FFFFFf]'}`}>
+		<Animated.View pointerEvents={isModalVisible.visible ? "none" : "auto"} className={`flex-1`} style={opacityStyle}>
 
 			<View className='mt-14 pb-[12px] border-[#D8D8D8] border-b-[0.55px]'><Text className='text-black text-xl font-[Poppins-Medium] ml-5'>Account</Text></View>
 
@@ -47,6 +66,6 @@ export default function Account({ navigation }) {
 				<EmailSettings sheet={bottomSheetRef.current['emailSetting']} />
 			</BottomSheetModal>
 
-		</View >
+		</Animated.View >
 	)
 }
