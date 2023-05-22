@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { View, Text, ScrollView, Image, TouchableNativeFeedback, RefreshControl } from 'react-native';
 import { Modal } from 'react-native-paper';
 import { ProgressBar } from 'react-native-paper';
@@ -7,7 +7,7 @@ import PieChart from 'react-native-pie-chart';
 
 import { fetchGroupsChart } from '../../actions/userActions';
 
-export default function GroupsCharts() {
+function GroupsCharts() {
     const dispatch = useDispatch();
     const { groupChartData, groups, chartLoading } = useSelector(state => state.user);
     const [selectedGroup, setSelectedGroup] = useState(groups[0]);
@@ -90,6 +90,8 @@ export default function GroupsCharts() {
         </ScrollView>
     )
 }
+
+export default memo(GroupsCharts);
 
 const GroupItems = ({ items, setSelectedGroup, setModal }) => {
     return (

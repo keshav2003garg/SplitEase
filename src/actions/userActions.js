@@ -832,6 +832,8 @@ const fetchbalance = (userID, groupID) => {
                         name: user.data().name,
                         avatar: user.data().avatar,
                         balance: Math.round(total),
+                        email: user.data().email,
+                        phoneNumber: user.data().phoneNumber,
                     })
                 }
                 let total = 0;

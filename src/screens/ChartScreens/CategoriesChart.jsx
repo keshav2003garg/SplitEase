@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, memo } from 'react';
 import { View, Text, ScrollView, Image, RefreshControl } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,7 +6,7 @@ import PieChart from 'react-native-pie-chart';
 
 import { fetchCategoriesChart } from '../../actions/userActions';
 
-export default function CategoriesChart() {
+function CategoriesChart() {
 	const dispatch = useDispatch();
 	const { categoriesChartData, user, chartLoading } = useSelector(state => state.user);
 	const [refreshing, setRefreshing] = useState(false);
@@ -67,6 +67,8 @@ export default function CategoriesChart() {
 		</ScrollView>
 	)
 }
+
+export default memo(CategoriesChart);
 
 
 const ChartCategories = ({ item, index, sliceColor, categoriesChartData }) => {
