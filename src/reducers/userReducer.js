@@ -14,7 +14,9 @@ import {
     UPDATE_PAYMENT_DETAILS__REQUEST, UPDATE_PAYMENT_DETAILS__SUCCESS, UPDATE_PAYMENT_DETAILS__FAIL,
     ADD_EXPENSE__REQUEST, ADD_EXPENSE__SUCCESS, ADD_EXPENSE__FAIL,
     FETCH_BALANCE__REQUEST, FETCH_BALANCE__SUCCESS, FETCH_BALANCE__FAIL,
-    FETCH_EXPENSE_CHART__REQUEST, FETCH_EXPENSE_CHART__SUCCESS, FETCH_EXPENSE_CHART__FAIL,
+    FETCH_CATEGORIES_CHART__REQUEST, FETCH_CATEGORIES_CHART__SUCCESS, FETCH_CATEGORIES_CHART__FAIL,
+    FETCH_GROUP_CHART__REQUEST, FETCH_GROUP_CHART__SUCCESS, FETCH_GROUP_CHART__FAIL,
+    FETCH_SPENDS_CHART__REQUEST, FETCH_SPENDS_CHART__SUCCESS, FETCH_SPENDS_CHART__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__ERRORS, CLEAR__MESSAGES,
@@ -24,7 +26,7 @@ import {
 
 
 
-const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false, groups: [], balance: [], activity: [], chartData: [] };
+const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false, groups: [], balance: [], activity: [], categoriesChartData: [], groupChartData: [], spendsChartData: [] };
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case GOOGLE_REGISTER__REQUEST:
@@ -66,7 +68,9 @@ const userReducer = (state = initialState, action) => {
                 ...state,
                 tabLoading: true,
             }
-        case FETCH_EXPENSE_CHART__REQUEST:
+        case FETCH_CATEGORIES_CHART__REQUEST:
+        case FETCH_GROUP_CHART__REQUEST:
+        case FETCH_SPENDS_CHART__REQUEST:
             return {
                 ...state,
                 chartLoading: true,
@@ -188,11 +192,23 @@ const userReducer = (state = initialState, action) => {
                 you_paid: action.payload.you_paid,
                 your_share: action.payload.your_share,
             }
-        case FETCH_EXPENSE_CHART__SUCCESS:
+        case FETCH_CATEGORIES_CHART__SUCCESS:
             return {
                 ...state,
                 chartLoading: false,
-                chartData: action.payload.chartData,
+                categoriesChartData: action.payload.chartData,
+            }
+        case FETCH_GROUP_CHART__SUCCESS:
+            return {
+                ...state,
+                chartLoading: false,
+                groupChartData: action.payload.chartData,
+            }
+        case FETCH_SPENDS_CHART__SUCCESS:
+            return {
+                ...state,
+                chartLoading: false,
+                spendsChartData: action.payload.chartData,
             }
 
 
@@ -244,7 +260,9 @@ const userReducer = (state = initialState, action) => {
                 tabLoading: false,
                 error: action.payload
             }
-        case FETCH_EXPENSE_CHART__FAIL:
+        case FETCH_CATEGORIES_CHART__FAIL:
+        case FETCH_GROUP_CHART__FAIL:
+        case FETCH_SPENDS_CHART__FAIL:
             return {
                 ...state,
                 chartLoading: false,

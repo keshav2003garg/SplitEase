@@ -95,7 +95,7 @@ export default function MainHome({ navigation }) {
 				</ScrollView>}
 
 			<View className='absolute bottom-4 right-5' onPress={() => { navigation.navigate('AddExpense') }} >
-				<TouchableNativeFeedback onPress={() => { navigation.navigate('AddExpense') }}>
+				<TouchableNativeFeedback disabled={groups.length==0} onPress={() => { navigation.navigate('AddExpense') }}>
 					<Animatable.View animation={'bounceInUp'} className='flex-row items-center rounded-[50px] bg-[#03a37e] p-[10px] px-[15px]'>
 						<View className='m-[5px]'><Feather name='money-bill-wave' color='white' size={20} /></View>
 						<Text className='m-[5px] text-white text-[15px] font-[Poppins-Medium]'>Add Expense</Text>

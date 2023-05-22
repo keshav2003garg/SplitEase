@@ -14,7 +14,9 @@ import {
     UPDATE_PAYMENT_DETAILS__REQUEST, UPDATE_PAYMENT_DETAILS__SUCCESS, UPDATE_PAYMENT_DETAILS__FAIL,
     ADD_EXPENSE__REQUEST, ADD_EXPENSE__SUCCESS, ADD_EXPENSE__FAIL,
     FETCH_BALANCE__REQUEST, FETCH_BALANCE__SUCCESS, FETCH_BALANCE__FAIL,
-    FETCH_EXPENSE_CHART__REQUEST, FETCH_EXPENSE_CHART__SUCCESS, FETCH_EXPENSE_CHART__FAIL,
+    FETCH_CATEGORIES_CHART__REQUEST, FETCH_CATEGORIES_CHART__SUCCESS, FETCH_CATEGORIES_CHART__FAIL,
+    FETCH_GROUP_CHART__REQUEST, FETCH_GROUP_CHART__SUCCESS, FETCH_GROUP_CHART__FAIL,
+    FETCH_SPENDS_CHART__REQUEST, FETCH_SPENDS_CHART__SUCCESS, FETCH_SPENDS_CHART__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__MESSAGES, CLEAR__ERRORS,
@@ -872,12 +874,12 @@ const fetchbalance = (userID, groupID) => {
 
 
 
-const fetchExpenseChart = (userID) => {
+const fetchCategoriesChart = (userID) => {
     return (
         async (dispatch) => {
             try {
                 dispatch({
-                    type: FETCH_EXPENSE_CHART__REQUEST
+                    type: FETCH_CATEGORIES_CHART__REQUEST
                 })
                 const fireBase = await firestore().collection('users').doc(userID).get();
                 const groupsJoined = fireBase.data().groupsJoined;
@@ -932,18 +934,147 @@ const fetchExpenseChart = (userID) => {
                     chartData: chartData,
                 }
                 dispatch({
-                    type: FETCH_EXPENSE_CHART__SUCCESS,
+                    type: FETCH_CATEGORIES_CHART__SUCCESS,
                     payload: data,
                 })
             } catch (error) {
                 dispatch({
-                    type: FETCH_EXPENSE_CHART__FAIL,
+                    type: FETCH_CATEGORIES_CHART__FAIL,
                     payload: error.toString()
                 })
             }
         }
     )
 }
+
+
+
+
+const fetchGroupsChart = (groupID) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: FETCH_GROUP_CHART__REQUEST
+                })
+                const fireBase = await firestore().collection('groups').doc(groupID).get();
+                const expenses = [
+                    { category: 'Food', amount: 0 },
+                    { category: 'Drinks', amount: 0 },
+                    { category: 'Beverages', amount: 0 },
+                    { category: 'Travel', amount: 0 },
+                    { category: 'Taxi', amount: 0 },
+                    { category: 'Hotel', amount: 0 },
+                    { category: 'Shopping', amount: 0 },
+                    { category: 'Utilities', amount: 0 },
+                    { category: 'Medical', amount: 0 },
+                    { category: 'EntryTicket', amount: 0 },
+                    { category: 'Others', amount: 0 },
+                ];
+                const groupExpenses = fireBase.data().expenses;
+                for (let j = 0; j < groupExpenses.length; j++) {
+                    if (groupExpenses[j].expenseCategoryName === 'Food') {
+                        expenses[0].amount += parseInt(groupExpenses[j].expenseAmount);
+                    } else if (groupExpenses[j].expenseCategoryName === 'Drinks') {
+                        expenses[1].amount += parseInt(groupExpenses[j].expenseAmount);
+                    } else if (groupExpenses[j].expenseCategoryName === 'Beverages') {
+                        expenses[2].amount += parseInt(groupExpenses[j].expenseAmount);
+                    } else if (groupExpenses[j].expenseCategoryName === 'Travel') {
+                        expenses[3].amount += parseInt(groupExpenses[j].expenseAmount);
+                    } else if (groupExpenses[j].expenseCategoryName === 'Taxi') {
+                        expenses[4].amount += parseInt(groupExpenses[j].expenseAmount);
+                    } else if (groupExpenses[j].expenseCategoryName === 'Hotel') {
+                        expenses[5].amount += parseInt(groupExpenses[j].expenseAmount);
+                    } else if (groupExpenses[j].expenseCategoryName === 'Shopping') {
+                        expenses[6].amount += parseInt(groupExpenses[j].expenseAmount);
+                    } else if (groupExpenses[j].expenseCategoryName === 'Utilities') {
+                        expenses[7].amount += parseInt(groupExpenses[j].expenseAmount);
+                    } else if (groupExpenses[j].expenseCategoryName === 'Medical') {
+                        expenses[8].amount += parseInt(groupExpenses[j].expenseAmount);
+                    } else if (groupExpenses[j].expenseCategoryName === 'EntryTicket') {
+                        expenses[9].amount += parseInt(groupExpenses[j].expenseAmount);
+                    } else if (groupExpenses[j].expenseCategoryName === 'Others') {
+                        expenses[10].amount += parseInt(groupExpenses[j].expenseAmount);
+                    }
+                }
+                let chartData = [];
+                for (let i = 0; i < expenses.length; i++) {
+                    chartData.push(expenses[i].amount);
+                }
+                const data = {
+                    message: 'Expense Chart Fetched Successfully',
+                    chartData: chartData,
+                }
+                dispatch({
+                    type: FETCH_GROUP_CHART__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: FETCH_GROUP_CHART__FAIL,
+                    payload: error.toString()
+                })
+            }
+        }
+    )
+}
+
+
+
+
+
+const fetchSpendsChart = (userID) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: FETCH_SPENDS_CHART__REQUEST
+                })
+                const fireBase = await firestore().collection('users').doc(userID).get();
+                const groupsJoined = fireBase.data().groupsJoined;
+                const expenses = [];
+                for (let i = 0; i < groupsJoined.length; i++) {
+                    const group = await firestore().collection('groups').doc(groupsJoined[i]).get();
+                    const groupExpenses = group.data().expenses;
+                    let totalExpense = 0;
+                    for (let j = 0; j < groupExpenses.length; j++) {
+                        totalExpense += parseInt(groupExpenses[j].expenseAmount);
+                    }
+                    expenses.push({
+                        name: group.data().groupName,
+                        icon: group.data().groupImage,
+                        amount: totalExpense,
+                    });
+                }
+                const chartData = [[], []];
+                for (let i = 0; i < expenses.length; i++) {
+                    chartData[0].push({
+                        name: expenses[i].name,
+                        icon: expenses[i].icon,
+                    });
+                    chartData[1].push(expenses[i].amount);
+                }
+
+                const data = {
+                    message: 'Expense Chart Fetched Successfully',
+                    chartData: chartData,
+                }
+                dispatch({
+                    type: FETCH_SPENDS_CHART__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: FETCH_SPENDS_CHART__FAIL,
+                    payload: error.toString()
+                })
+            }
+        }
+    )
+}
+
+
+
 
 
 
@@ -1031,7 +1162,7 @@ const addActivity = (activity) => {
 
 export {
     googleRegister, googleLogout,
-    createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup, addExpense, fetchbalance, fetchExpenseChart,
+    createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup, addExpense, fetchbalance, fetchCategoriesChart, fetchGroupsChart, fetchSpendsChart,
     fetchUserDetails, updateUserDetails, updatePamentDetails,
 
     clearErrors, clearMessages, bottomTabVisible, bottomTabHidden, enableBiometric, disableBiometric, addActivity,
