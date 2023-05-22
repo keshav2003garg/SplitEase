@@ -17,9 +17,10 @@ export default function Categories({ setCategory, setVisible, setData, data }) {
     ]
 
     return (
-        <View>
+        <>
+            <View className='pb-3 m-2 border-[#D8D8D8] border-b-[0.55px]'><Text className='text-black text-xl font-[Poppins-Medium] text-center'>Categories</Text></View>
             <FlatList data={categories} renderItem={({ item }) => <List items={item} setCategory={setCategory} setVisible={setVisible} setData={setData} data={data} />} keyExtractor={(item, index) => index.toString()} />
-        </View>
+        </>
     )
 }
 

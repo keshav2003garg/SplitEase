@@ -10,9 +10,6 @@ import { clearMessages, clearErrors } from "../actions/userActions";
 import Main from './mainTabs';
 import Auth from './authTabs';
 
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-	console.log('Killed state notification.', remoteMessage)
-});
 
 export default function Root() {
 	const [access, setAccess] = useState({ isAccessed: false, error: null });

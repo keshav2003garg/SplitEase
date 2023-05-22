@@ -9,12 +9,11 @@ import { fetchMembers, updateGroup, leaveGroup, deleteGroup, fetchGroup } from '
 
 export default function GroupSettings({ data, sheet, navigation }) {
 	const dispatch = useDispatch();
-	const { localLoading, spinLoading, groupMembers, user, groupInfo } = useSelector(state => state.user);
+	const { memberLoading, spinLoading, groupMembers, user, groupInfo } = useSelector(state => state.user);
 	const [group, setGroup] = useState({ name: groupInfo.groupName, type: 'trip', image: groupInfo.groupImage });
 
 	useEffect(() => {
 		dispatch(fetchMembers(data.groupID));
-		dispatch(fetchGroup(data.groupID));
 	}, []);
 
 	const onShare = async () => {
@@ -70,7 +69,7 @@ export default function GroupSettings({ data, sheet, navigation }) {
 				</View>
 			</TouchableNativeFeedback>
 
-			{localLoading ? <PulseLoading /> : <FlatList className='flex-grow-0' data={groupMembers} renderItem={({ item }) => <GroupMember data={item} />} keyExtractor={(item, index) => index.toString()} />}
+			{memberLoading ? <PulseLoading /> : <FlatList className='flex-grow-0' data={groupMembers} renderItem={({ item }) => <GroupMember data={item} />} keyExtractor={(item, index) => index.toString()} />}
 
 			<View className='border-b-2 border-[#D8D8D8]'></View>
 

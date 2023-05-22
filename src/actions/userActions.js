@@ -14,10 +14,12 @@ import {
     UPDATE_PAYMENT_DETAILS__REQUEST, UPDATE_PAYMENT_DETAILS__SUCCESS, UPDATE_PAYMENT_DETAILS__FAIL,
     ADD_EXPENSE__REQUEST, ADD_EXPENSE__SUCCESS, ADD_EXPENSE__FAIL,
     FETCH_BALANCE__REQUEST, FETCH_BALANCE__SUCCESS, FETCH_BALANCE__FAIL,
+    FETCH_EXPENSE_CHART__REQUEST, FETCH_EXPENSE_CHART__SUCCESS, FETCH_EXPENSE_CHART__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__MESSAGES, CLEAR__ERRORS,
-    BOTTOM_TAB__VISIBLE, BOTTOM_TAB__HIDDEN
+    BOTTOM_TAB__VISIBLE, BOTTOM_TAB__HIDDEN,
+    ADD_ACTIVITY,
 } from '../constants/userConstants';
 
 import auth from '@react-native-firebase/auth';
@@ -307,6 +309,31 @@ const joinGroup = (userID, joinCode) => {
                         });
                         await firestore().collection('users').doc(userID).update({
                             groupsJoined: firestore.FieldValue.arrayUnion(groupID)
+                        });
+                        const group = await firestore().collection('groups').doc(groupID).get();
+                        const user = await firestore().collection('users').doc(userID).get();
+                        const deviceTokens = [];
+                        const message = {
+                            "title": `New Member Joined`,
+                            "body": `${user.data().name} has just joined ${group.data().groupName} group`,
+                            "color": "#ffa500",
+                            "priority": "high",
+                            "content_available": true
+                        }
+                        for (let i = 0; i < groupMembers.length; i++) {
+                            const token = await firestore().collection('users').doc(groupMembers[i]).get();
+                            deviceTokens.push(token.data().deviceToken);
+                        }
+                        const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+                            method: 'POST',
+                            headers: {
+                                'authorization': 'key=AAAAvjgEGCY:APA91bHyPolgpCQwV3Z0K32F3RRnuvpye0shUTeP4zW0mQq-W9AvoyjS9cUB2EIoPG21cZApasenBnLWVZpEDVhs5mzRgJvgLgRgDUnH0cBcFIhVLorD-tDq1Q-Ivu5ZhsG-0cLB0szU',
+                                'content-type': 'application/json',
+                            },
+                            body: `{
+                                "registration_ids": ${JSON.stringify(deviceTokens)},
+                                "notification": ${JSON.stringify(message)}
+                            }`,
                         });
                         const data = {
                             message: 'Group Joined Successfully',
@@ -681,11 +708,11 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy, expens
                 }
                 const fireBase = await firestore().collection('groups').doc(groupID).get();
                 const groupMembers = fireBase.data().groupMembers;
-                if(groupMembers.length === 1){
+                if (groupMembers.length === 1) {
                     dispatch({
                         type: ADD_EXPENSE__FAIL,
                         payload: 'There should be atleast 2 members in the group',
-                    })  
+                    })
                     return;
                 }
                 const payments = fireBase.data().payments;
@@ -702,6 +729,8 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy, expens
                     expenseCreatedAt: new Date(),
                     expenseFor: groupMembers.filter((member) => member !== expensePaidBy),
                     expenseCategory: url,
+                    expenseCategoryName: expenseCategory,
+                    groupName: fireBase.data().groupName,
                 }
                 await firestore().collection('groups').doc(groupID).update({
                     expenses: firestore.FieldValue.arrayUnion(expense),
@@ -727,6 +756,30 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy, expens
                 }
                 await firestore().collection('groups').doc(groupID).update({
                     payments: newPayments,
+                });
+                const deviceTokens = [];
+                const message = {
+                    "title": `New expense added in ${fireBase.data().groupName} group`,
+                    "body": `${expenseName} of ₹${expenseAmount} added by ${paidBy.data().name.split(' ')[0]}`,
+                    "color": "#ffa500",
+                    "priority": "high",
+                    "content_available": true
+                }
+                for (let i = 0; i < groupMembers.length; i++) {
+                    const token = await firestore().collection('users').doc(groupMembers[i]).get();
+                    deviceTokens.push(token.data().deviceToken);
+                }
+                const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+                    method: 'POST',
+                    headers: {
+                        'authorization': 'key=AAAAvjgEGCY:APA91bHyPolgpCQwV3Z0K32F3RRnuvpye0shUTeP4zW0mQq-W9AvoyjS9cUB2EIoPG21cZApasenBnLWVZpEDVhs5mzRgJvgLgRgDUnH0cBcFIhVLorD-tDq1Q-Ivu5ZhsG-0cLB0szU',
+                        'content-type': 'application/json',
+                    },
+                    body: `{
+                        "registration_ids": ${JSON.stringify(deviceTokens)},
+                        "notification": ${JSON.stringify(message)},
+                        "data": ${JSON.stringify(expense)}
+                    }`,
                 });
                 const data = {
                     message: 'Expense Added Successfully',
@@ -819,6 +872,85 @@ const fetchbalance = (userID, groupID) => {
 
 
 
+const fetchExpenseChart = (userID) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: FETCH_EXPENSE_CHART__REQUEST
+                })
+                const fireBase = await firestore().collection('users').doc(userID).get();
+                const groupsJoined = fireBase.data().groupsJoined;
+                const expenses = [
+                    { category: 'Food', amount: 0 },
+                    { category: 'Drinks', amount: 0 },
+                    { category: 'Beverages', amount: 0 },
+                    { category: 'Travel', amount: 0 },
+                    { category: 'Taxi', amount: 0 },
+                    { category: 'Hotel', amount: 0 },
+                    { category: 'Shopping', amount: 0 },
+                    { category: 'Utilities', amount: 0 },
+                    { category: 'Medical', amount: 0 },
+                    { category: 'EntryTicket', amount: 0 },
+                    { category: 'Others', amount: 0 },
+                ];
+                for (let i = 0; i < groupsJoined.length; i++) {
+                    const group = await firestore().collection('groups').doc(groupsJoined[i]).get();
+                    const groupExpenses = group.data().expenses;
+                    for (let j = 0; j < groupExpenses.length; j++) {
+                        if (groupExpenses[j].expenseCategoryName === 'Food') {
+                            expenses[0].amount += parseInt(groupExpenses[j].expenseAmount);
+                        } else if (groupExpenses[j].expenseCategoryName === 'Drinks') {
+                            expenses[1].amount += parseInt(groupExpenses[j].expenseAmount);
+                        } else if (groupExpenses[j].expenseCategoryName === 'Beverages') {
+                            expenses[2].amount += parseInt(groupExpenses[j].expenseAmount);
+                        } else if (groupExpenses[j].expenseCategoryName === 'Travel') {
+                            expenses[3].amount += parseInt(groupExpenses[j].expenseAmount);
+                        } else if (groupExpenses[j].expenseCategoryName === 'Taxi') {
+                            expenses[4].amount += parseInt(groupExpenses[j].expenseAmount);
+                        } else if (groupExpenses[j].expenseCategoryName === 'Hotel') {
+                            expenses[5].amount += parseInt(groupExpenses[j].expenseAmount);
+                        } else if (groupExpenses[j].expenseCategoryName === 'Shopping') {
+                            expenses[6].amount += parseInt(groupExpenses[j].expenseAmount);
+                        } else if (groupExpenses[j].expenseCategoryName === 'Utilities') {
+                            expenses[7].amount += parseInt(groupExpenses[j].expenseAmount);
+                        } else if (groupExpenses[j].expenseCategoryName === 'Medical') {
+                            expenses[8].amount += parseInt(groupExpenses[j].expenseAmount);
+                        } else if (groupExpenses[j].expenseCategoryName === 'EntryTicket') {
+                            expenses[9].amount += parseInt(groupExpenses[j].expenseAmount);
+                        } else if (groupExpenses[j].expenseCategoryName === 'Others') {
+                            expenses[10].amount += parseInt(groupExpenses[j].expenseAmount);
+                        }
+                    }
+                }
+                let chartData = [];
+                for (let i = 0; i < expenses.length; i++) {
+                    chartData.push(expenses[i].amount);
+                }
+                const data = {
+                    message: 'Expense Chart Fetched Successfully',
+                    chartData: chartData,
+                }
+                dispatch({
+                    type: FETCH_EXPENSE_CHART__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: FETCH_EXPENSE_CHART__FAIL,
+                    payload: error.toString()
+                })
+            }
+        }
+    )
+}
+
+
+
+
+
+
+
 
 
 
@@ -882,12 +1014,25 @@ const disableBiometric = () => {
     )
 }
 
+const addActivity = (activity) => {
+    return (
+        async (dispatch) => {
+            dispatch({
+                type: ADD_ACTIVITY,
+                payload: activity,
+            })
+        }
+    )
+}
+
+
+
 
 
 export {
     googleRegister, googleLogout,
-    createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup, addExpense, fetchbalance,
+    createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup, addExpense, fetchbalance, fetchExpenseChart,
     fetchUserDetails, updateUserDetails, updatePamentDetails,
 
-    clearErrors, clearMessages, bottomTabVisible, bottomTabHidden, enableBiometric, disableBiometric
+    clearErrors, clearMessages, bottomTabVisible, bottomTabHidden, enableBiometric, disableBiometric, addActivity,
 };

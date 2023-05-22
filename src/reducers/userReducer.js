@@ -14,15 +14,17 @@ import {
     UPDATE_PAYMENT_DETAILS__REQUEST, UPDATE_PAYMENT_DETAILS__SUCCESS, UPDATE_PAYMENT_DETAILS__FAIL,
     ADD_EXPENSE__REQUEST, ADD_EXPENSE__SUCCESS, ADD_EXPENSE__FAIL,
     FETCH_BALANCE__REQUEST, FETCH_BALANCE__SUCCESS, FETCH_BALANCE__FAIL,
+    FETCH_EXPENSE_CHART__REQUEST, FETCH_EXPENSE_CHART__SUCCESS, FETCH_EXPENSE_CHART__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__ERRORS, CLEAR__MESSAGES,
-    BOTTOM_TAB__VISIBLE, BOTTOM_TAB__HIDDEN
+    BOTTOM_TAB__VISIBLE, BOTTOM_TAB__HIDDEN,
+    ADD_ACTIVITY,
 } from '../constants/userConstants';
 
 
 
-const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false, groups: [], balance: [] };
+const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false, groups: [], balance: [], activity: [], chartData: [] };
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case GOOGLE_REGISTER__REQUEST:
@@ -41,12 +43,16 @@ const userReducer = (state = initialState, action) => {
                 ...state,
                 pulseLoading: true,
             }
-        case FETCH_GROUP_MEMBERS__REQUEST:
         case FETCH_GROUP__REQUEST:
         case FETCH_USER_DETAILS__REQUEST:
             return {
                 ...state,
                 localLoading: true,
+            }
+        case FETCH_GROUP_MEMBERS__REQUEST:
+            return {
+                ...state,
+                memberLoading: true,
             }
         case UPDATE_GROUP__REQUEST:
         case UPDATE_USER_DETAILS__REQUEST:
@@ -59,6 +65,11 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 tabLoading: true,
+            }
+        case FETCH_EXPENSE_CHART__REQUEST:
+            return {
+                ...state,
+                chartLoading: true,
             }
 
 
@@ -112,7 +123,7 @@ const userReducer = (state = initialState, action) => {
         case FETCH_GROUP_MEMBERS__SUCCESS:
             return {
                 ...state,
-                localLoading: false,
+                memberLoading: false,
                 groupMembers: action.payload.groupMembers
             }
         case LEAVE_GROUP__SUCCESS:
@@ -177,6 +188,12 @@ const userReducer = (state = initialState, action) => {
                 you_paid: action.payload.you_paid,
                 your_share: action.payload.your_share,
             }
+        case FETCH_EXPENSE_CHART__SUCCESS:
+            return {
+                ...state,
+                chartLoading: false,
+                chartData: action.payload.chartData,
+            }
 
 
 
@@ -200,12 +217,17 @@ const userReducer = (state = initialState, action) => {
                 pulseLoading: false,
                 error: action.payload
             }
-        case FETCH_GROUP_MEMBERS__FAIL:
         case FETCH_GROUP__FAIL:
         case FETCH_USER_DETAILS__FAIL:
             return {
                 ...state,
                 localLoading: false,
+                error: action.payload
+            }
+        case FETCH_GROUP_MEMBERS__FAIL:
+            return {
+                ...state,
+                memberLoading: false,
                 error: action.payload
             }
         case UPDATE_GROUP__FAIL:
@@ -220,6 +242,12 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 tabLoading: false,
+                error: action.payload
+            }
+        case FETCH_EXPENSE_CHART__FAIL:
+            return {
+                ...state,
+                chartLoading: false,
                 error: action.payload
             }
 
@@ -263,6 +291,11 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isFingerPrintNeeded: false
+            }
+        case ADD_ACTIVITY:
+            return {
+                ...state,
+                activity: [...state.activity, action.payload]
             }
 
 

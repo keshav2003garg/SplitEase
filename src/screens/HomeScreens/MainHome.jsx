@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { View, Text, StatusBar, Image, ScrollView, TouchableNativeFeedback, RefreshControl } from 'react-native';
+import { RadioButton } from 'react-native-paper';
+import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import { useDispatch, useSelector } from "react-redux";
 import Icon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/FontAwesome5';
@@ -17,6 +19,8 @@ export default function MainHome({ navigation }) {
 	const dispatch = useDispatch();
 	const { groups, user, pulseLoading } = useSelector(state => state.user);
 	const [refreshing, setRefreshing] = useState(false);
+	const [searchQuery, setSearchQuery] = useState('');
+	const [visibleMenu, setVisibleMenu] = useState(false);
 	useEffect(() => {
 		dispatch(fetchGroups(user.userID));
 	}, []);
@@ -31,7 +35,7 @@ export default function MainHome({ navigation }) {
 
 			<StatusBar barStyle='dark-content' />
 
-			<HomeNavbar />
+			<HomeNavbar navigation={navigation} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
 			{pulseLoading ?
 				<PulseLoading />
@@ -53,13 +57,22 @@ export default function MainHome({ navigation }) {
 								}
 							</Text>
 						</View>
-						<Icon name='md-options-sharp' color='#5A5A5A' size={32} />
+						<Menu visible={visibleMenu} onRequestClose={() => { setVisibleMenu(false) }} anchor={<TouchableNativeFeedback onPress={() => { setVisibleMenu(true) }}><View><Icon name='md-options-sharp' color='#5A5A5A' size={32} /></View></TouchableNativeFeedback>}>
+							<View className='flex'>
+								<MenuItem> <RadioButton value="first" /> <Text className='text-black text-base font-[Poppins-Medium]'>All Expenses</Text> </MenuItem>
+								<MenuItem> <RadioButton value="second" /> <Text className='text-black text-base font-[Poppins-Medium]'>Settled Up</Text> </MenuItem>
+								<MenuItem> <RadioButton value="third" /> <Text className='text-black text-base font-[Poppins-Medium]'>You Owe</Text> </MenuItem>
+								<MenuItem> <RadioButton value="fourth" /> <Text className='text-black text-base font-[Poppins-Medium]'>You are Owed</Text> </MenuItem>
+							</View>
+						</Menu>
 					</View>
 
 					{groups && groups.map((data) => {
-						return (
-							<GroupList key={data.groupID} data={data} />
-						)
+						if (data.groupName.toLowerCase().includes(searchQuery.toLowerCase())) {
+							return (
+								<GroupList key={data.groupID} data={data} navigation={navigation} />
+							)
+						}
 					})}
 
 					<View className='flex-row mx-[20px] mt-[17px]'>

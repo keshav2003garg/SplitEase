@@ -5,6 +5,7 @@ import Toast from 'react-native-toast-message';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import messaging from '@react-native-firebase/messaging';
 
 import store, { persistor } from './src/store';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -13,6 +14,14 @@ import { Provider } from 'react-redux';
 import Root from "./src/clusters/root";
 import Alert from "./src/components/Alert";
 
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+	store.dispatch({ type: 'ADD_ACTIVITY', payload: remoteMessage.data })
+	console.log('Quit notification.', remoteMessage)
+});
+messaging().onMessage(async remoteMessage => {
+	store.dispatch({ type: 'ADD_ACTIVITY', payload: remoteMessage.data })
+	console.log('Foreground state notification.', remoteMessage)
+});
 const navTheme = {
 	...DefaultTheme,
 	colors: {

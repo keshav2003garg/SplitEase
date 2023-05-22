@@ -12,6 +12,7 @@ export default function JoinByLink({ sheet }) {
     const { user, loading } = useSelector(state => state.user);
     const [link, setLink] = useState('');
 
+
     const handleJoin = () => {
         trigger("impactMedium");
         dispatch(joinGroup(user.userID, link));
