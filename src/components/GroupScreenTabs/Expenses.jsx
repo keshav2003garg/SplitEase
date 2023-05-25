@@ -1,14 +1,20 @@
 import React, { useState, useCallback, memo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, FlatList, Image, RefreshControl } from 'react-native';
 import MI from 'react-native-vector-icons/MaterialIcons';
 
+import { fetchGroup } from '../../actions/userActions';
+
 function Expenses({ data, user, loading, isModalVisible }) {
     const [refreshing, setRefreshing] = useState(false);
+    const dispatch = useDispatch();
+    const { localLoading } = useSelector(state => state.user);
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 1000);
+        if (data?.groupID) {
+            dispatch(fetchGroup(data?.groupID, user?.userID));
+        }
+        setRefreshing(false);
     }, []);
     let expense = JSON.parse(JSON.stringify(data?.expenses || []));
     expense?.reverse()

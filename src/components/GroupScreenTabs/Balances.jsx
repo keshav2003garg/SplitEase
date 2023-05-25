@@ -3,13 +3,20 @@ import { View, Text, Image, FlatList, TouchableNativeFeedback, Linking, BackHand
 import { useSelector, useDispatch } from 'react-redux';
 import { TextInput } from 'react-native-paper';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import ANT from 'react-native-vector-icons/AntDesign';
+import MI from 'react-native-vector-icons/MaterialIcons';
 
-import { addSettlement } from '../../actions/userActions';
+import { addSettlement, fetchbalance } from '../../actions/userActions';
 
 export default function Balances({ balance, user, groupInfo }) {
+	let count = 0;
+	balance?.forEach(item => {
+		if (item?.balance !== 0) count++;
+	});
 	return (
-		<FlatList data={balance} renderItem={({ item }) => <BalanceList item={item} user={user} groupInfo={groupInfo} />} />
+		count === 0 ?
+			<View className='mt-5 flex-1 justify-center items-center'><MI name='error-outline' size={50} color={'black'} /><Text className='text-[#5A5A5A] font-[Poppins-Medium]'>No Balances</Text></View>
+			:
+			<FlatList data={balance} renderItem={({ item }) => <BalanceList item={item} user={user} groupInfo={groupInfo} />} />
 	)
 }
 
@@ -37,11 +44,16 @@ const BalanceList = ({ item, user, groupInfo }) => {
 	const [selectedMethod, setSelectedMethod] = useState({ upi: false, paytm: false, cash: true });
 
 	const dispatch = useDispatch();
+	const { message } = useSelector(state => state.user);
 
 	const handleSettleUp = () => {
 		bottomSheetModalRef.current?.close();
 		dispatch(addSettlement(groupInfo.groupID, borrower.balance, borrower, lender, "Cash"));
 	}
+
+	useEffect(() => {
+		dispatch(fetchbalance(user.userID, groupInfo.groupID));
+	}, [message]);
 
 
 	return (

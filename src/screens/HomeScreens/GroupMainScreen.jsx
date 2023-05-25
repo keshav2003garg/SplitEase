@@ -18,7 +18,7 @@ import Payments from '../../components/GroupScreenTabs/Payments';
 const GroupMainScreen = ({ route, navigation }) => {
 	const { data } = route.params;
 	const dispatch = useDispatch();
-	const { groupInfo, localLoading, user, balance, tabLoading, total, totalGroupSpent, you_paid, your_share } = useSelector(state => state.user);
+	const { groupInfo, localLoading, user, balance, tabLoading, total, totalGroupSpent, you_paid, your_share, message } = useSelector(state => state.user);
 	const [tab, setTab] = useState({ expenses: true, balances: false, total: false, payments: false });
 	const [isModalVisible, setModalVisible] = useState(false);
 	const bottomSheetModalRef = useRef(null);
@@ -36,7 +36,7 @@ const GroupMainScreen = ({ route, navigation }) => {
 	useEffect(() => {
 		dispatch(fetchGroup(data.groupID, user.userID));
 		dispatch(fetchbalance(user.userID, data.groupID));
-	}, []);
+	}, [message]);
 	return (
 		<View pointerEvents={isModalVisible ? "none" : "auto"} className={`flex-1 ${isModalVisible ? 'bg-[#BEBEBE]' : 'bg-[#FFFFFf]'}`}>
 

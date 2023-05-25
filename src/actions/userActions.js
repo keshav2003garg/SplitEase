@@ -57,6 +57,7 @@ const googleRegister = () => {
                         createdAt: firestore.FieldValue.serverTimestamp(),
                         phoneNumber: '',
                         groupsJoined: [],
+                        balances: [],
                         paymentDetails: {
                             upi: '',
                             paytm: '',
@@ -76,6 +77,7 @@ const googleRegister = () => {
                             createdAt: firestore.FieldValue.serverTimestamp(),
                             phoneNumber: '',
                             groupsJoined: [],
+                            balances: [],
                             paymentDetails: {
                                 upi: '',
                                 paytm: '',
@@ -106,6 +108,7 @@ const googleRegister = () => {
                             createdAt: date,
                             phoneNumber: fireBase.docs[0].data().phoneNumber,
                             groupsJoined: fireBase.docs[0].data().groupsJoined,
+                            balances: fireBase.docs[0].data().balances,
                             paymentDetails: fireBase.docs[0].data().paymentDetails,
                             you_borrow: fireBase.docs[0].data().you_borrow,
                             you_lend: fireBase.docs[0].data().you_lend,
@@ -579,6 +582,7 @@ const fetchUserDetails = (userID) => {
                         createdAt: fireBase.data().createdAt,
                         phoneNumber: fireBase.data().phoneNumber,
                         groupsJoined: fireBase.data().groupsJoined,
+                        balances: fireBase.data().balances,
                         paymentDetails: fireBase.data().paymentDetails,
                         you_borrow: fireBase.data().you_borrow,
                         you_lend: fireBase.data().you_lend,
@@ -821,6 +825,7 @@ const fetchbalance = (userID, groupID) => {
                 const fireBase = await firestore().collection('groups').doc(groupID).get();
                 const expenses = fireBase.data().expenses;
                 const groupMembers = fireBase.data().groupMembers;
+                const settlements = fireBase.data().settlements;
 
                 let balance = [];
                 for (let i = 0; i < groupMembers.length; i++) {
@@ -832,6 +837,14 @@ const fetchbalance = (userID, groupID) => {
                         }
                         if (expenses[j].expensePaidBy.userID === userID && expenses[j].expenseFor.includes(groupMembers[i])) {
                             total += expenses[j].expenseAmountPerHead;
+                        }
+                    }
+                    for (let j = 0; j < settlements.length; j++) {
+                        if (settlements[j].settlementPaidBy.userID === groupMembers[i] && settlements[j].settlementPaidTo.userID === userID) {
+                            total -= settlements[j].settlementAmount;
+                        }
+                        if (settlements[j].settlementPaidBy.userID === userID && settlements[j].settlementPaidTo.userID === groupMembers[i]) {
+                            total += settlements[j].settlementAmount;
                         }
                     }
                     const user = await firestore().collection('users').doc(groupMembers[i]).get();

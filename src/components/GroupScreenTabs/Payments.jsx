@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { View, Text, FlatList, Image } from 'react-native';
+import MI from 'react-native-vector-icons/MaterialIcons';
 import ANT from 'react-native-vector-icons/AntDesign';
 
 import { fetchSettlements } from '../../actions/userActions';
@@ -13,16 +14,20 @@ export default function Payments({ groupInfo }) {
 		dispatch(fetchSettlements(groupInfo?.groupID));
 	}, []);
 
-	console.log(settlements);
+	let settlement = JSON.parse(JSON.stringify(settlements || []));
+	settlement?.reverse()
 
 	return (
-		<FlatList data={settlements} keyExtractor={(item, index) => index.toString()} renderItem={({ item }) => <SettlementsList item={item} />} />
+		settlement.length === 0 ?
+			<View className='mt-5 flex-1 justify-center items-center'><MI name='error-outline' size={50} color={'black'} /><Text className='text-[#5A5A5A] font-[Poppins-Medium]'>No Settlements</Text></View>
+			:
+			<FlatList data={settlement} keyExtractor={(item, index) => index.toString()} renderItem={({ item }) => <SettlementsList item={item} />} />
 	)
 }
 
 
 const SettlementsList = ({ item }) => {
-	const date = new Date(item.settlementCreatedAt);
+	const date = new Date(item.settlementCreatedAt.seconds * 1000 + item.settlementCreatedAt.nanoseconds / 1000000);
 
 	return (
 		<View className='bg-slate-50 my-2 mx-3 p-2 rounded-lg'>
@@ -46,13 +51,13 @@ const SettlementsList = ({ item }) => {
 					<View className='rounded-full overflow-hidden'><Image className='w-12 h-12' source={{ uri: item.settlementPaidTo.avatar }} /></View>
 					<Text className='text-black text-[13px] font-[Poppins-Medium]  mt-2'>{item.settlementPaidTo.name}</Text>
 				</View>
-				
+
 			</View>
 
 
 			<View className='flex-row justify-between items-center py-3 border-[#D8D8D8] border-t-[0.55px]'>
-				<View className='p-[10px] rounded-lg bg-[#000000]'><Text className='text-sm text-white font-[Poppins-Medium]'>{date.getDate()} {date.toLocaleString('default', { month: 'long' })}</Text></View>
-				<View className='p-[10px] rounded-lg bg-[#009E60]'><Text className='text-sm text-white font-[Poppins-Medium]'>{item.settlementMethod}</Text></View>
+				<View className='p-[10px] mx-4 flex-1 rounded-lg bg-[#000000]'><Text className='text-sm text-white text-center font-[Poppins-Medium]'>{date.getDate()} {date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}</Text></View>
+				<View className='p-[10px] mx-4 flex-1 rounded-lg bg-[#009E60]'><Text className='text-sm text-white text-center font-[Poppins-Medium]'>{item.settlementMethod}</Text></View>
 			</View>
 		</View>
 	)

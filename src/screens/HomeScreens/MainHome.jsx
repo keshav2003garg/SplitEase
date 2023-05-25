@@ -23,7 +23,7 @@ export default function MainHome({ navigation }) {
 	const [visibleMenu, setVisibleMenu] = useState(false);
 	useEffect(() => {
 		dispatch(fetchGroups(user.userID));
-	}, []);
+	}, [navigation]);
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
 		dispatch(fetchGroups(user.userID));
