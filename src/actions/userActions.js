@@ -305,6 +305,8 @@ const joinGroup = (userID, joinCode) => {
                 } else {
                     const groupID = fireBase.docs[0].id;
                     const groupMembers = fireBase.docs[0].data().groupMembers;
+                    const payments = fireBase.docs[0].data().payments;
+                    const expenses = fireBase.docs[0].data().expenses;
                     if (groupMembers.includes(userID)) {
                         const data = {
                             error: 'Already Joined',
@@ -314,10 +316,34 @@ const joinGroup = (userID, joinCode) => {
                             payload: data,
                         })
                     } else {
-                        await firestore().collection('groups').doc(groupID).update({
-                            groupMembers: firestore.FieldValue.arrayUnion(userID),
-                            payments: [...fireBase.docs[0].data().payments, { userID: userID, borrow: 0, lend: 0 }]
-                        });
+                        let oldUser = false;
+                        for(let i=0; i<payments.length; i++){
+                            if(payments[i].userID === userID){
+                                oldUser = true;
+                                break;
+                            }
+                        }
+                        if(expenses.length > 0){
+                            const data = {
+                                error: 'You cannot join this group as expenses are already added. Please create a new group',
+                            }
+                            dispatch({
+                                type: JOIN_GROUP__NOT_SUCCESS,
+                                payload: data,
+                            })
+                            return;
+                        }
+                        if(oldUser){
+                            await firestore().collection('groups').doc(groupID).update({
+                                groupMembers: firestore.FieldValue.arrayUnion(userID)
+                            });
+                        }else{
+                            await firestore().collection('groups').doc(groupID).update({
+                                groupMembers: firestore.FieldValue.arrayUnion(userID),
+                                payments: firestore.FieldValue.arrayUnion({ userID: userID, borrow: 0, lend: 0 }),
+                            });
+                        }
+
                         await firestore().collection('users').doc(userID).update({
                             groupsJoined: firestore.FieldValue.arrayUnion(groupID)
                         });
@@ -426,6 +452,24 @@ const leaveGroup = (userID, groupID) => {
                 dispatch({
                     type: LEAVE_GROUP__REQUEST
                 })
+                const fireBase = await firestore().collection('groups').doc(groupID).get();
+                const payments = fireBase.data().payments;
+                let canLeave = true;
+                for (let i = 0; i < payments.length; i++) {
+                    if (payments[i].userID === userID) {
+                        if (payments[i].borrow !== 0 || payments[i].lend !== 0) {
+                            canLeave = false;
+                            break;
+                        }
+                    }
+                }
+                if (!canLeave) {
+                    dispatch({
+                        type: LEAVE_GROUP__FAIL,
+                        payload: 'You cannot leave this group as you have some pending payments',
+                    })
+                    return;
+                }
                 await firestore().collection('groups').doc(groupID).update({
                     groupMembers: firestore.FieldValue.arrayRemove(userID)
                 });
@@ -459,6 +503,14 @@ const deleteGroup = (userID, groupID) => {
                 dispatch({
                     type: DELETE_GROUP__REQUEST
                 })
+                const fireBase = await firestore().collection('groups').doc(groupID).get();
+                if(fireBase.data().expenses.length > 0){
+                    dispatch({
+                        type: DELETE_GROUP__FAIL,
+                        payload: 'You cannot delete this group as expenses are already added. Please leave the group',
+                    })
+                    return;
+                }
                 const group = await firestore().collection('groups').doc(groupID).get();
                 for (let i = 0; i < group.data().groupMembers.length; i++) {
                     await firestore().collection('users').doc(group.data().groupMembers[i]).update({
@@ -857,6 +909,7 @@ const fetchbalance = (userID, groupID) => {
                         phoneNumber: user.data().phoneNumber,
                     })
                 }
+
                 let total = 0;
                 for (let j = 0; j < balance.length; j++) {
                     total += parseInt(balance[j].balance);

@@ -57,14 +57,7 @@ export default function MainHome({ navigation }) {
 								}
 							</Text>
 						</View>
-						<Menu visible={visibleMenu} onRequestClose={() => { setVisibleMenu(false) }} anchor={<TouchableNativeFeedback onPress={() => { setVisibleMenu(true) }}><View><Icon name='md-options-sharp' color='#5A5A5A' size={32} /></View></TouchableNativeFeedback>}>
-							<View className='flex'>
-								<MenuItem> <RadioButton value="first" /> <Text className='text-black text-base font-[Poppins-Medium]'>All Expenses</Text> </MenuItem>
-								<MenuItem> <RadioButton value="second" /> <Text className='text-black text-base font-[Poppins-Medium]'>Settled Up</Text> </MenuItem>
-								<MenuItem> <RadioButton value="third" /> <Text className='text-black text-base font-[Poppins-Medium]'>You Owe</Text> </MenuItem>
-								<MenuItem> <RadioButton value="fourth" /> <Text className='text-black text-base font-[Poppins-Medium]'>You are Owed</Text> </MenuItem>
-							</View>
-						</Menu>
+						<TouchableNativeFeedback onPress={() => { setVisibleMenu(true) }}><View><Icon name='md-options-sharp' color='#5A5A5A' size={32} /></View></TouchableNativeFeedback>
 					</View>
 
 					{groups && groups.map((data) => {

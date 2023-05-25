@@ -6,6 +6,8 @@ import ActivityList from '../../components/ActivityList';
 
 export default function Activity() {
 	const { activity } = useSelector(state => state.user);
+	let activityList = JSON.parse(JSON.stringify(activity || []));
+	activityList?.reverse()
 	return (
 		<View className='flex-1'>
 
@@ -16,7 +18,7 @@ export default function Activity() {
 					<Text className='text-black text-[16px] font-[Poppins-Medium]'>No activity yet</Text>
 				</View>
 				: 
-				<FlatList data={activity} renderItem={({ item }) => <ActivityList data={item} />} keyExtractor={(item, index) => index.toString()} />
+				<FlatList data={activityList} renderItem={({ item }) => <ActivityList data={item} />} keyExtractor={(item, index) => index.toString()} />
 			}
 
 

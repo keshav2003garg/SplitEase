@@ -45,6 +45,7 @@ const ExpenseList = ({ item, user, isModalVisible }) => {
                 <View className='items-center justify-center'>
                     <Text className='text-[10px] text-[#5A5A5A] font-[Poppins-Regular]'>{date.toLocaleString('default', { month: 'long' })}</Text>
                     <Text className='text-[18px] text-[#5A5A5A] font-[Poppins-Medium] leading-5'>{date.getDate()}</Text>
+                    <Text className='text-[10px] text-[#5A5A5A] font-[Poppins-Medium] leading-5'>{date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</Text>
                 </View>
                 <View className={`mx-3 p-2 bg-${isModalVisible ? '[#BEBEBE]' : 'slate-100'} rounded-lg`}><Image source={{ uri: item.expenseCategory }} className='w-10 h-10' /></View>
                 <View>

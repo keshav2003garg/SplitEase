@@ -66,22 +66,22 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
 
             <Text className='mx-5 mt-4 mb-2 text-black text-sm font-[Poppins-Regular]'>Preferences</Text>
 
-            <TouchableNativeFeedback onPress={() => { handleSheet('emailSetting') }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
+            {/* <TouchableNativeFeedback onPress={() => { handleSheet('emailSetting') }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
                 <View className='px-5 py-3 flex-row items-center'>
                     <View><MI name='email' size={30} color={'black'} /></View>
                     <Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Email Settings</Text>
+                </View>
+            </TouchableNativeFeedback> */}
+            <TouchableNativeFeedback onPress={() => { setAlert(true) }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
+                <View className='px-5 py-3 flex-row items-center'>
+                    <View><MI name='lock' size={30} color={'black'} /></View>
+                    <Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Lock your App</Text>
                 </View>
             </TouchableNativeFeedback>
             <TouchableNativeFeedback onPress={() => { NotificationSetting.open() }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
                 <View className='px-5 py-3 flex-row items-center'>
                     <View><MI name='notifications' size={30} color={'black'} /></View>
-                    <Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Device and Push notification settings</Text>
-                </View>
-            </TouchableNativeFeedback>
-            <TouchableNativeFeedback onPress={() => { setAlert(true) }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
-                <View className='px-5 py-3 flex-row items-center'>
-                    <View><MI name='lock' size={30} color={'black'} /></View>
-                    <Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Lock your App</Text>
+                    <Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Notification settings</Text>
                 </View>
             </TouchableNativeFeedback>
 

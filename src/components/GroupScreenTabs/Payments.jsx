@@ -56,8 +56,8 @@ const SettlementsList = ({ item }) => {
 
 
 			<View className='flex-row justify-between items-center py-3 border-[#D8D8D8] border-t-[0.55px]'>
-				<View className='p-[10px] mx-4 flex-1 rounded-lg bg-[#000000]'><Text className='text-sm text-white text-center font-[Poppins-Medium]'>{date.getDate()} {date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}</Text></View>
-				<View className='p-[10px] mx-4 flex-1 rounded-lg bg-[#009E60]'><Text className='text-sm text-white text-center font-[Poppins-Medium]'>{item.settlementMethod}</Text></View>
+				<View className='p-[10px] mr-4 flex-1 rounded-lg bg-[#000000]'><Text className='text-sm text-white text-center font-[Poppins-Medium]'>{date.getDate()} {date.toLocaleString('default', { month: 'long' })} {date.getFullYear()} {date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</Text></View>
+				<View className='p-[10px] ml-4 flex-1 rounded-lg bg-[#009E60]'><Text className='text-sm text-white text-center font-[Poppins-Medium]'>{item.settlementMethod}</Text></View>
 			</View>
 		</View>
 	)

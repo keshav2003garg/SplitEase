@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { TextInput } from 'react-native-paper';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import MI from 'react-native-vector-icons/MaterialIcons';
+import ANT from 'react-native-vector-icons/AntDesign';
 
 import { addSettlement, fetchbalance } from '../../actions/userActions';
 
