@@ -11,6 +11,7 @@ export default function CreateGroup({ navigation }) {
 	const dispatch = useDispatch();
 	const { user, loading, groups } = useSelector(state => state.user);
 	const [group, setGroup] = useState({ name: '', type: 'trip', image: '', members: [user.userID] });
+	const [type, setType] = useState('trip');
 
 	const handleCreateGroup = () => {
 		dispatch(createGroup(group));
@@ -35,23 +36,31 @@ export default function CreateGroup({ navigation }) {
 				</View>
 				<View>
 					<Text className='text-sm text-[#5A5A5A] font-[Poppins-Medium] ml-5'>Type</Text>
-					<ScrollView className='ml-6 my-2' horizontal={true} >
-						<View className='flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-3xl'>
-							<View className='ml-2'><MCI name="airplane" color='black' size={25} /></View>
-							<Text className='mx-2 mt-[1px] text-[#5A5A5A] text-[13px] font-[Poppins-Medium]'>Trip</Text>
-						</View>
-						<View className='flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-3xl'>
-							<View className='ml-2'><MCI name="home" color='black' size={25} /></View>
-							<Text className='mx-2 mt-[1px] text-[#5A5A5A] text-[13px] font-[Poppins-Medium]'>Home</Text>
-						</View>
-						<View className='flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-3xl'>
-							<View className='ml-2'><MCI name="cards-heart" color='black' size={25} /></View>
-							<Text className='mx-2 mt-[1px] text-[#5A5A5A] text-[13px] font-[Poppins-Medium]'>Couple</Text>
-						</View>
-						<View className='flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-3xl'>
-							<View className='ml-2'><MCI name="note-text" color='black' size={25} /></View>
-							<Text className='mx-2 mt-[1px] text-[#5A5A5A] text-[13px] font-[Poppins-Medium]'>Other</Text>
-						</View>
+					<ScrollView className='ml-6 my-2' horizontal={true} fadingEdgeLength={0} >
+						<TouchableNativeFeedback onPress={() => { setType('trip') }}>
+							<View className={`flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-3xl bg-[#${type === 'trip' ? '03a37e' : ''}]`}>
+								<View className='ml-2'><MCI name="airplane" color={`${type === 'trip' ? 'white' : 'black'}`} size={25} /></View>
+								<Text className={`mx-2 mt-[1px] text-[13px] font-[Poppins-Medium]`} style={{color: `${type === 'trip' ? '#f5f5f5' : '#5A5A5A'}`}}>Trip</Text>
+							</View>
+						</TouchableNativeFeedback>
+						<TouchableNativeFeedback disabled={true} onPress={() => { setType('home') }}>
+							<View className={`flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-3xl bg-[#${type === 'home' ? '03a37e' : ''}]`}>
+								<View className='ml-2'><MCI name="home" color={`${type === 'home' ? 'white' : 'black'}`} size={25} /></View>
+								<Text className={`mx-2 mt-[1px] text-[13px] font-[Poppins-Medium]`} style={{color: `${type === 'home' ? '#f5f5f5' : '#5A5A5A'}`}}>Home</Text>
+							</View>
+						</TouchableNativeFeedback>
+						<TouchableNativeFeedback disabled={true} onPress={() => { setType('couple') }}>
+							<View className={`flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-3xl bg-[#${type === 'couple' ? '03a37e' : ''}]`}>
+								<View className='ml-2'><MCI name="cards-heart" color={`${type === 'couple' ? 'white' : 'black'}`} size={25} /></View>
+								<Text className={`mx-2 mt-[1px] text-[13px] font-[Poppins-Medium]`} style={{color: `${type === 'couple' ? '#f5f5f5' : '#5A5A5A'}`}}>Couple</Text>
+							</View>
+						</TouchableNativeFeedback>
+						<TouchableNativeFeedback disabled={true} onPress={() => { setType('other') }}>
+							<View className={`flex-row justify-center items-center mx-1 p-2 border-[#5A5A5A] border-2 rounded-3xl bg-[#${type === 'other' ? '03a37e' : ''}]`}>
+								<View className='ml-2'><MCI name="note-text" color={`${type === 'other' ? 'white' : 'black'}`} size={25} /></View>
+								<Text className={`mx-2 mt-[1px] text-[13px] font-[Poppins-Medium]`} style={{color: `${type === 'other' ? '#f5f5f5' : '#5A5A5A'}`}}>Other</Text>
+							</View>
+						</TouchableNativeFeedback>
 					</ScrollView>
 				</View>
 			</View>
