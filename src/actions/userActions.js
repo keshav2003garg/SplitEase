@@ -17,6 +17,8 @@ import {
     FETCH_CATEGORIES_CHART__REQUEST, FETCH_CATEGORIES_CHART__SUCCESS, FETCH_CATEGORIES_CHART__FAIL,
     FETCH_GROUP_CHART__REQUEST, FETCH_GROUP_CHART__SUCCESS, FETCH_GROUP_CHART__FAIL,
     FETCH_SPENDS_CHART__REQUEST, FETCH_SPENDS_CHART__SUCCESS, FETCH_SPENDS_CHART__FAIL,
+    ADD_SETTLEMENT__REQUEST, ADD_SETTLEMENT__SUCCESS, ADD_SETTLEMENT__FAIL,
+    FETCH_SETTLEMENTS__REQUEST, FETCH_SETTLEMENTS__SUCCESS, FETCH_SETTLEMENTS__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__MESSAGES, CLEAR__ERRORS,
@@ -182,6 +184,7 @@ const createGroup = ({ name, type, image, members }) => {
                     joinCode: code,
                     expenses: [],
                     payments: [{ userID: members[0], borrow: 0, lend: 0 }],
+                    settlements: [],
                     createdAt: firestore.FieldValue.serverTimestamp(),
                     createdBy: members[0]
                 })
@@ -198,6 +201,8 @@ const createGroup = ({ name, type, image, members }) => {
                         groupMembers: members,
                         joinCode: code,
                         expenses: [],
+                        payments: [{ userID: members[0], borrow: 0, lend: 0 }],
+                        settlements: [],
                         createdBy: members[0],
                         createdAt: firestore.FieldValue.serverTimestamp(),
                     },
@@ -241,6 +246,7 @@ const fetchGroups = (userID) => {
                         joinCode: group.data().joinCode,
                         expenses: group.data().expenses,
                         payments: group.data().payments,
+                        settlements: group.data().settlements,
                         createdBy: group.data().createdBy,
                         createdAt: group.data().createdAt,
                         borrow: you[0].borrow,
@@ -348,6 +354,7 @@ const joinGroup = (userID, joinCode) => {
                                 joinCode: fireBase.docs[0].data().joinCode,
                                 expenses: fireBase.docs[0].data().expenses,
                                 payments: fireBase.docs[0].data().payments,
+                                settlements: fireBase.docs[0].data().settlements,
                                 createdBy: fireBase.docs[0].data().createdBy,
                                 createdAt: fireBase.docs[0].data().createdAt,
                             },
@@ -532,6 +539,7 @@ const fetchGroup = (groupID, userID) => {
                         joinCode: fireBase.data().joinCode,
                         expenses: fireBase.data().expenses,
                         payments: fireBase.data().payments,
+                        settlements: fireBase.data().settlements,
                         createdBy: fireBase.data().createdBy,
                         createdAt: fireBase.data().createdAt,
                     },
@@ -1078,6 +1086,114 @@ const fetchSpendsChart = (userID) => {
 
 
 
+const addSettlement = (groupID, settlementAmount, settlementPaidBy, settlementPaidTo, settlementMethod) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: ADD_SETTLEMENT__REQUEST
+                })
+                if (!settlementAmount) {
+                    dispatch({
+                        type: ADD_SETTLEMENT__FAIL,
+                        payload: 'Settlement Amount is Required',
+                    })
+                    return;
+                }
+                const fireBase = await firestore().collection('groups').doc(groupID).get();
+
+                const newPayments = [];
+                const payments = fireBase.data().payments;
+                for (let i = 0; i < payments.length; i++) {
+                    if (payments[i].userID === settlementPaidBy.userID) {
+                        newPayments.push({ userID: payments[i].userID, borrow: payments[i].borrow - settlementAmount, lend: payments[i].lend });
+                    } else if (payments[i].userID === settlementPaidTo.userID) {
+                        newPayments.push({ userID: payments[i].userID, borrow: payments[i].borrow, lend: payments[i].lend - settlementAmount });
+                    } else {
+                        newPayments.push(payments[i]);
+                    }
+                }
+                await firestore().collection('groups').doc(groupID).update({
+                    payments: newPayments,
+                });
+                const groupMembers = fireBase.data().groupMembers;
+                for (let i = 0; i < groupMembers.length; i++) {
+                    if (groupMembers[i] === settlementPaidBy.userID) {
+                        await firestore().collection('users').doc(groupMembers[i]).update({
+                            you_borrow: firestore.FieldValue.increment(-settlementAmount),
+                        });
+                    } else if (groupMembers[i] === settlementPaidTo.userID) {
+                        await firestore().collection('users').doc(groupMembers[i]).update({
+                            you_lend: firestore.FieldValue.increment(-settlementAmount),
+                        });
+                    }
+                }
+                const settlement = {
+                    settlementAmount: settlementAmount,
+                    settlementPaidBy: { userID: settlementPaidBy.userID, name: settlementPaidBy.name, avatar: settlementPaidBy.avatar },
+                    settlementPaidTo: { userID: settlementPaidTo.userID, name: settlementPaidTo.name, avatar: settlementPaidTo.avatar },
+                    settlementMethod: settlementMethod,
+                    settlementCreatedAt: new Date(),
+                }
+                await firestore().collection('groups').doc(groupID).update({
+                    settlements: firestore.FieldValue.arrayUnion(settlement),
+                });
+                const data = {
+                    message: 'Amount SettledUp Successfully',
+                    settlement: settlement,
+                }
+                dispatch({
+                    type: ADD_SETTLEMENT__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: ADD_SETTLEMENT__FAIL,
+                    payload: error.toString()
+                })
+            }
+        }
+    )
+}
+
+
+
+
+
+const fetchSettlements = (groupID) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: FETCH_SETTLEMENTS__REQUEST
+                })
+                const fireBase = await firestore().collection('groups').doc(groupID).get();
+                const settlements = fireBase.data().settlements;
+                const data = {
+                    message: 'Settlements Fetched Successfully',
+                    settlements: settlements,
+                }
+                dispatch({
+                    type: FETCH_SETTLEMENTS__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: FETCH_SETTLEMENTS__FAIL,
+                    payload: error.toString()
+                })
+            }
+        }
+    )
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -1164,7 +1280,7 @@ const addActivity = (activity) => {
 
 export {
     googleRegister, googleLogout,
-    createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup, addExpense, fetchbalance, fetchCategoriesChart, fetchGroupsChart, fetchSpendsChart,
+    createGroup, fetchGroups, joinGroup, fetchMembers, leaveGroup, deleteGroup, updateGroup, fetchGroup, addExpense, fetchbalance, fetchCategoriesChart, fetchGroupsChart, fetchSpendsChart, addSettlement, fetchSettlements,
     fetchUserDetails, updateUserDetails, updatePamentDetails,
 
     clearErrors, clearMessages, bottomTabVisible, bottomTabHidden, enableBiometric, disableBiometric, addActivity,

@@ -92,7 +92,7 @@ const GroupMainScreen = ({ route, navigation }) => {
 				{tab.expenses && <Expenses data={groupInfo} user={user} loading={localLoading} isModalVisible={isModalVisible} />}
 				{tab.balances && <Balances balance={balance} user={user} groupInfo={groupInfo} />}
 				{tab.total && <Total totalGroupSpent={totalGroupSpent} you_paid={you_paid} your_share={your_share} />}
-				{tab.payments && <Payments />}
+				{tab.payments && <Payments groupInfo={groupInfo} />}
 
 				<View className='absolute bottom-4 right-5' onPress={() => { navigation.navigate('AddExpense') }} >
 					<TouchableNativeFeedback onPress={() => { navigation.navigate('AddExpense', { alreadySelected: true, group: groupInfo }) }}>

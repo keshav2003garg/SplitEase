@@ -1,8 +1,11 @@
-import React, { useMemo, useState, useRef } from 'react'
+import React, { useMemo, useState, useRef, useEffect } from 'react'
 import { View, Text, Image, FlatList, TouchableNativeFeedback, Linking, BackHandler } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import { TextInput } from 'react-native-paper';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import ANT from 'react-native-vector-icons/AntDesign';
+
+import { addSettlement } from '../../actions/userActions';
 
 export default function Balances({ balance, user, groupInfo }) {
 	return (
@@ -32,6 +35,14 @@ const BalanceList = ({ item, user, groupInfo }) => {
 	});
 
 	const [selectedMethod, setSelectedMethod] = useState({ upi: false, paytm: false, cash: true });
+
+	const dispatch = useDispatch();
+
+	const handleSettleUp = () => {
+		bottomSheetModalRef.current?.close();
+		dispatch(addSettlement(groupInfo.groupID, borrower.balance, borrower, lender, "Cash"));
+	}
+
 
 	return (
 		item?.balance !== 0 &&
@@ -108,7 +119,7 @@ const BalanceList = ({ item, user, groupInfo }) => {
 					</View>
 				</TouchableNativeFeedback>
 
-				<TouchableNativeFeedback>
+				<TouchableNativeFeedback onPress={handleSettleUp}>
 					<View className='mx-3 my-5 py-3 bg-black rounded-xl'><Text className='text-white text-center text-base font-[Poppins-Medium]'>Settle Up</Text></View>
 				</TouchableNativeFeedback>
 

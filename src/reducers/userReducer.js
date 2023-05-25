@@ -17,6 +17,8 @@ import {
     FETCH_CATEGORIES_CHART__REQUEST, FETCH_CATEGORIES_CHART__SUCCESS, FETCH_CATEGORIES_CHART__FAIL,
     FETCH_GROUP_CHART__REQUEST, FETCH_GROUP_CHART__SUCCESS, FETCH_GROUP_CHART__FAIL,
     FETCH_SPENDS_CHART__REQUEST, FETCH_SPENDS_CHART__SUCCESS, FETCH_SPENDS_CHART__FAIL,
+    ADD_SETTLEMENT__REQUEST, ADD_SETTLEMENT__SUCCESS, ADD_SETTLEMENT__FAIL,
+    FETCH_SETTLEMENTS__REQUEST, FETCH_SETTLEMENTS__SUCCESS, FETCH_SETTLEMENTS__FAIL,
 
     BIOMETRIC_NEEDED, BIOMETRIC_NOT_NEEDED,
     CLEAR__ERRORS, CLEAR__MESSAGES,
@@ -26,7 +28,7 @@ import {
 
 
 
-const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false, groups: [], balance: [], activity: [], categoriesChartData: [], groupChartData: [], spendsChartData: [] };
+const initialState = { isAuthenticated: false, tabVisible: true, isFingerPrintNeeded: false, groups: [], balance: [], activity: [], categoriesChartData: [], groupChartData: [], spendsChartData: [], settlements: [] };
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case GOOGLE_REGISTER__REQUEST:
@@ -36,6 +38,7 @@ const userReducer = (state = initialState, action) => {
         case LEAVE_GROUP__REQUEST:
         case DELETE_GROUP__REQUEST:
         case ADD_EXPENSE__REQUEST:
+        case ADD_SETTLEMENT__REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -64,6 +67,7 @@ const userReducer = (state = initialState, action) => {
                 spinLoading: true,
             }
         case FETCH_BALANCE__REQUEST:
+        case FETCH_SETTLEMENTS__REQUEST:
             return {
                 ...state,
                 tabLoading: true,
@@ -210,6 +214,18 @@ const userReducer = (state = initialState, action) => {
                 chartLoading: false,
                 spendsChartData: action.payload.chartData,
             }
+        case ADD_SETTLEMENT__SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                message: action.payload.message,
+            }
+        case FETCH_SETTLEMENTS__SUCCESS:
+            return {
+                ...state,
+                tabLoading: false,
+                settlements: action.payload.settlements,
+            }
 
 
 
@@ -222,6 +238,7 @@ const userReducer = (state = initialState, action) => {
         case LEAVE_GROUP__FAIL:
         case DELETE_GROUP__FAIL:
         case ADD_EXPENSE__FAIL:
+        case ADD_SETTLEMENT__FAIL:
             return {
                 ...state,
                 loading: false,
@@ -255,6 +272,7 @@ const userReducer = (state = initialState, action) => {
                 error: action.payload
             }
         case FETCH_BALANCE__FAIL:
+        case FETCH_SETTLEMENTS__FAIL:
             return {
                 ...state,
                 tabLoading: false,
