@@ -20,7 +20,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 messaging().onMessage(async remoteMessage => {
 	store.dispatch({ type: 'ADD_ACTIVITY', payload: remoteMessage.data })
-	console.log('Foreground state notification.', remoteMessage)
+	console.log('Foreground notification.', remoteMessage)
 });
 const navTheme = {
 	...DefaultTheme,

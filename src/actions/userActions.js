@@ -844,9 +844,14 @@ const addExpense = (groupID, { expenseName, expenseAmount, expensePaidBy, expens
                     body: `{
                         "registration_ids": ${JSON.stringify(deviceTokens)},
                         "notification": ${JSON.stringify(message)},
-                        "data": ${JSON.stringify(expense)}
+                        "data": ${JSON.stringify(expense)},
+                        "android": {
+                            "image": "${url}",
+                            "priority": "high"
+                        },
                     }`,
                 });
+                console.log(response)
                 const data = {
                     message: 'Expense Added Successfully',
                     expense: expense,

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableNativeFeedback, Linking, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import NotificationSetting from 'react-native-open-notification';
-import Toast from 'react-native-toast-message';
+import { showBottomAlert } from 'react-native-modal-bottom-alert';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import MI from 'react-native-vector-icons/MaterialIcons';
 import EN from 'react-native-vector-icons/Entypo';
@@ -17,18 +17,10 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
     const handleConfirm = () => {
         setAlert(false);
         if (isFingerPrintNeeded) {
-            Toast.show({
-                type: 'custom',
-                position: 'bottom',
-                text1: 'App lock removed successfully',
-            });
+            showBottomAlert('success', 'App lock removed successfully')
             dispatch(disableBiometric());
         } else {
-            Toast.show({
-                type: 'custom',
-                position: 'bottom',
-                text1: 'App lock set successfully',
-            });
+            showBottomAlert('success', 'App lock set successfully')
             dispatch(enableBiometric());
         }
     }
@@ -66,12 +58,6 @@ export default function AccountPage({ isModalVisible, handleSheet }) {
 
             <Text className='mx-5 mt-4 mb-2 text-black text-sm font-[Poppins-Regular]'>Preferences</Text>
 
-            {/* <TouchableNativeFeedback onPress={() => { handleSheet('emailSetting') }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
-                <View className='px-5 py-3 flex-row items-center'>
-                    <View><MI name='email' size={30} color={'black'} /></View>
-                    <Text className='ml-6 text-black text-base font-[Poppins-Regular]'>Email Settings</Text>
-                </View>
-            </TouchableNativeFeedback> */}
             <TouchableNativeFeedback onPress={() => { setAlert(true) }} background={TouchableNativeFeedback.Ripple('#D0D0D0', false)}>
                 <View className='px-5 py-3 flex-row items-center'>
                     <View><MI name='lock' size={30} color={'black'} /></View>

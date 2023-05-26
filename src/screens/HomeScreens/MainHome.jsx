@@ -83,7 +83,7 @@ export default function MainHome({ navigation }) {
 								}
 							}
 							else if (checked === 'second') {
-								if (data.you_borrow == 0 && data.you_lend == 0) {
+								if (data.borrow == 0 && data.lend == 0) {
 									if (data.groupName.toLowerCase().includes(searchQuery.toLowerCase())) {
 										return (
 											<GroupList key={data.groupID} data={data} navigation={navigation} />
@@ -92,7 +92,7 @@ export default function MainHome({ navigation }) {
 								}
 							}
 							else if (checked === 'third') {
-								if (data.you_borrow != 0) {
+								if (data.borrow != 0) {
 									if (data.groupName.toLowerCase().includes(searchQuery.toLowerCase())) {
 										return (
 											<GroupList key={data.groupID} data={data} navigation={navigation} />
@@ -101,7 +101,7 @@ export default function MainHome({ navigation }) {
 								}
 							}
 							else if (checked === 'fourth') {
-								if (data.you_lend != 0) {
+								if (data.lend != 0) {
 									if (data.groupName.toLowerCase().includes(searchQuery.toLowerCase())) {
 										return (
 											<GroupList key={data.groupID} data={data} navigation={navigation} />

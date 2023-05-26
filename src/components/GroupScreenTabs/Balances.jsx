@@ -49,7 +49,7 @@ const BalanceList = ({ item, user, groupInfo }) => {
 
 	const handleSettleUp = () => {
 		bottomSheetModalRef.current?.close();
-		dispatch(addSettlement(groupInfo.groupID, borrower.balance, borrower, lender, "Cash"));
+		dispatch(addSettlement(groupInfo.groupID, Math.abs(item.balance), borrower, lender, "Cash"));
 	}
 
 	useEffect(() => {
@@ -84,7 +84,7 @@ const BalanceList = ({ item, user, groupInfo }) => {
 			</View>
 
 			<View className='flex-row justify-between items-center py-3 border-[#D8D8D8] border-t-[0.55px]'>
-				<TouchableNativeFeedback onPress={() => { Linking.openURL(remind) }}><View className='p-[10px] rounded-lg bg-[#000000]'><Text className='text-sm text-white font-[Poppins-Medium]'>Remind</Text></View></TouchableNativeFeedback>
+				<TouchableNativeFeedback disabled={user.userID === borrower.userID} onPress={() => { Linking.openURL(remind) }}><View className={`p-[10px] rounded-lg`} style={{backgroundColor: `${user.userID === borrower.userID ? '#6A6A6A' : '#000000'}`}}><Text className='text-sm text-white font-[Poppins-Medium]'>Remind</Text></View></TouchableNativeFeedback>
 				<TouchableNativeFeedback onPress={handleSheet}><View className='p-[10px] rounded-lg bg-[#009E60]'><Text className='text-sm text-white font-[Poppins-Medium]'>SettleUp</Text></View></TouchableNativeFeedback>
 			</View>
 
@@ -106,7 +106,7 @@ const BalanceList = ({ item, user, groupInfo }) => {
 					</View>
 				</View>
 
-				<TextInput className='mx-3 mb-2' label={<Text className='text-base font-[Poppins-Medium]'>Enter Amount</Text>} value={borrower.balance.toString()} contentStyle={{ fontFamily: 'Poppins-Medium' }} mode='outlined' outlineColor='#5A5A5A' activeOutlineColor='#5A5A5A' outlineStyle={{ backgroundColor: 'white' }} inputMode='decimal' />
+				<TextInput className='mx-3 mb-2' label={<Text className='text-base font-[Poppins-Medium]'>Enter Amount</Text>} value={item.balance.toString()} contentStyle={{ fontFamily: 'Poppins-Medium' }} mode='outlined' outlineColor='#5A5A5A' activeOutlineColor='#5A5A5A' outlineStyle={{ backgroundColor: 'white' }} inputMode='decimal' />
 
 
 				<View className='mt-5 pb-[12px]'><Text className='text-black text-base font-[Poppins-Medium] ml-5'>Select Payment Method</Text></View>
